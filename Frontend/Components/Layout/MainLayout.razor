@@ -2,7 +2,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
-<MudThemeProvider IsDarkMode="_isDarkMode" Theme="_customTheme" />
+<MudThemeProvider Theme="_customTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -15,10 +15,6 @@
         }
         <MudText Typo="Typo.h6" Class="ml-3">Portail Métier</MudText>
         <MudSpacer />
-        <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
-            <MudMenuItem OnClick="@ToggleLightMode">Clair</MudMenuItem>
-            <MudMenuItem OnClick="@ToggleDarkMode">Sombre</MudMenuItem>
-        </MudMenu>
     </MudAppBar>
 
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -37,7 +33,6 @@
 
 @code {
     private bool _drawerOpen = true;
-    private bool _isDarkMode = false;
 
     private MudTheme _customTheme = new MudTheme()
     {
@@ -72,17 +67,5 @@
     private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
-    }
-
-    private void ToggleLightMode()
-    {
-        _isDarkMode = false;
-        StateHasChanged();
-    }
-
-    private void ToggleDarkMode()
-    {
-        _isDarkMode = true;
-        StateHasChanged();
     }
 }
