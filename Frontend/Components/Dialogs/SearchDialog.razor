@@ -1,0 +1,60 @@
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="_searchText" 
+                      Label="Texte à rechercher" 
+                      Variant="Variant.Outlined" 
+                      Immediate="true"
+                      HelperText="Entrez le numéro ou le nom du dossier" />
+        
+        @if (_searchResults.Any())
+        {
+            <MudList Clickable="true" Class="mt-4">
+                @foreach (var result in _searchResults)
+                {
+                    <MudListItem Text="@result" OnClick="@(() => SelectResult(result))" />
+                }
+            </MudList>
+        }
+        else if (!string.IsNullOrWhiteSpace(_searchText))
+        {
+            <MudText Typo="Typo.body2" Class="mt-4">Aucun résultat trouvé</MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Annuler</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    MudDialogInstance? MudDialog { get; set; }
+
+    private string _searchText = "";
+    private string _selectedResult = "";
+
+    // Simulation de résultats de recherche
+    private List<string> _searchResults => string.IsNullOrWhiteSpace(_searchText) 
+        ? new List<string>()
+        : new List<string>
+        {
+            "25.01.116 MG GR POLE SANTE FONTENAY LE COMTE",
+            "24.10.170 YB PE MANITOU",
+            "24.09.145 AB CD PROJET TEST"
+        }.Where(x => x.Contains(_searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+
+    private void SelectResult(string result)
+    {
+        _selectedResult = result;
+    }
+
+    private void Submit()
+    {
+        MudDialog?.Close(DialogResult.Ok(_selectedResult));
+    }
+
+    private void Cancel()
+    {
+        MudDialog?.Cancel();
+    }
+}

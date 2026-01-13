@@ -1,6 +1,7 @@
 @page "/beorg/dossier"
 
 @using System.IO
+@inject IDialogService DialogService
 
 <MudPaper Class="d-flex flex-column" Style="height: calc(100vh - 80px);" Elevation="0">
     
@@ -11,7 +12,7 @@
             <MudMenuItem>25.01.116 MG GR POLE SANTE</MudMenuItem>
             <MudMenuItem>24.10.170 YB PE MANITOU</MudMenuItem>
         </MudMenu>
-        <MudButton Variant="Variant.Text" OnClick="@(() => _searchDialogOpen = true)">Rechercher</MudButton>
+        <MudButton Variant="Variant.Text" OnClick="@OpenSearchDialog">Rechercher</MudButton>
         <MudSpacer />
         <MudText Typo="Typo.body2" Class="mr-2">Dossier :</MudText>
         <MudText Typo="Typo.body1"><b>25.01.116 MG GR POLE SANTE FONTENAY LE COMTE</b></MudText>
@@ -59,21 +60,7 @@
     </MudPaper>
 </MudPaper>
 
-<!-- Fenêtre de dialogue pour la recherche -->
-<MudDialog @bind-IsVisible="_searchDialogOpen" Title="Rechercher un dossier">
-    <DialogContent>
-        <MudTextField T="string" Label="Texte à rechercher" Variant="Variant.Outlined" />
-        <!-- On simulera la liste des résultats ici -->
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="@(() => _searchDialogOpen = false)">Annuler</MudButton>
-        <MudButton Color="Color.Primary" OnClick="@(() => _searchDialogOpen = false)">Ok</MudButton>
-    </DialogActions>
-</MudDialog>
-
 @code {
-    private bool _searchDialogOpen = false;
-
     // Données de simulation pour la table
     private class FileData {
         public string Name { get; set; } = "";
@@ -87,4 +74,18 @@
         new FileData { Name = "REV2501_2501116.RVT", Size = "159 Mo", Type = "Fichier RVT", Modified = new DateTime(2025, 12, 18, 17, 56, 0) },
         new FileData { Name = "Plan_Coffrage.pdf", Size = "2 Mo", Type = "Fichier PDF", Modified = new DateTime(2025, 12, 17, 11, 2, 0) }
     };
+
+    private async Task OpenSearchDialog()
+    {
+        var parameters = new DialogParameters();
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        
+        var dialog = await DialogService.ShowAsync<SearchDialog>("Rechercher un dossier", parameters, options);
+        var result = await dialog.Result;
+        
+        if (!result.Canceled)
+        {
+            // Traiter le résultat de la recherche si nécessaire
+        }
+    }
 }
