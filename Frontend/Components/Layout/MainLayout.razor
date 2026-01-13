@@ -1,13 +1,24 @@
 @inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
-<MudThemeProvider Theme="_customTheme" />
+<MudThemeProvider @bind-IsDarkMode="_isDarkMode" Theme="_customTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
     <MudAppBar Elevation="1" Color="Color.Primary">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
-        <MudText Typo="Typo.h6" Class="ml-3">Portail Métier - TEST NavMenu</MudText>
+        @if (IsBackButtonVisible())
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" OnClick="@GoBack" />
+        }
+        <MudText Typo="Typo.h6" Class="ml-3">Portail Métier</MudText>
+        <MudSpacer />
+        <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+            <MudMenuItem OnClick="@(() => _isDarkMode = false)">Clair</MudMenuItem>
+            <MudMenuItem OnClick="@(() => _isDarkMode = true)">Sombre</MudMenuItem>
+        </MudMenu>
     </MudAppBar>
 
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -19,7 +30,6 @@
 
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
-            <MudText Typo="Typo.h3">TEST - Avec NavMenu</MudText>
             @Body
         </MudContainer>
     </MudMainContent>
@@ -27,6 +37,7 @@
 
 @code {
     private bool _drawerOpen = true;
+    private bool _isDarkMode = false;
 
     private MudTheme _customTheme = new MudTheme()
     {
@@ -47,6 +58,16 @@
             AppbarBackground = "#1c1c19"
         }
     };
+
+    private async Task GoBack()
+    {
+        await JSRuntime.InvokeVoidAsync("history.back");
+    }
+
+    private bool IsBackButtonVisible()
+    {
+        return NavigationManager.Uri != NavigationManager.BaseUri;
+    }
 
     private void DrawerToggle()
     {
