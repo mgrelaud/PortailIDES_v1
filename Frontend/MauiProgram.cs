@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
 using MudBlazor;
-using PortailMetier.Frontend.Services;
 
 namespace PortailMetier.Frontend;
 
@@ -23,9 +22,6 @@ public static class MauiProgram
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
-
-        // Enregistrement du service de gestion de thème
-        builder.Services.AddSingleton<ThemeService>();
 
         // Configuration correcte de MudBlazor avec options
         builder.Services.AddMudServices(config =>
