@@ -10,7 +10,7 @@
 
 <MudPaper Class="d-flex flex-column" Style="height: 100%; width: 100%;" Elevation="0">
 
-    <!-- Barre d’outils -->
+    <!-- Barre d'outils -->
     <MudToolBar Dense="true">
         <MudMenu Label="Récents" Variant="Variant.Text" EndIcon="@Icons.Material.Filled.ArrowDropDown">
             <MudMenuItem>25.01.116 MG GR POLE SANTE</MudMenuItem>
@@ -24,7 +24,7 @@
         <MudSpacer />
 
         <MudText Typo="Typo.body2" Class="mr-2">Dossier :</MudText>
-        <MudText Typo="Typo.body1"><b>@_dossierCourant?.Nom</b></MudText>
+        <MudText Typo="Typo.body1"><b>@(_dossierCourant?.Nom ?? "Aucun")</b></MudText>
     </MudToolBar>
 
     <!-- Corps -->
@@ -51,7 +51,7 @@
                             var dossier = node.Value;
                         }
 
-                        <MudTreeViewItem T="DossierDto" Value="@dossier" Text="@dossier.Nom"
+                        <MudTreeViewItem T="DossierDto" Value="@dossier" Text="@(dossier?.Nom ?? "")"
                             Icon="@Icons.Material.Filled.Folder" Items="@node.Children" />
                     </ItemTemplate>
                 </MudTreeView>
@@ -98,7 +98,7 @@
     <MudPaper Elevation="2" Class="pa-2" Square="true">
         <MudText Typo="Typo.caption">
             <MudIcon Icon="@Icons.Material.Filled.Folder" Size="Size.Small" Class="mr-1" />
-            @_dossierCourant?.CheminCompletUNC
+            @(_dossierCourant?.CheminCompletUNC ?? "")
         </MudText>
     </MudPaper>
 </MudPaper>
@@ -125,6 +125,7 @@
     }
 
     // Construction TreeItemData v7 : Value = DossierDto, Children = enfants
+    // Construction TreeItemData v7 : Value = DossierDto, Children = enfants
     private IReadOnlyCollection<TreeItemData<DossierDto>> BuildTreeItems(List<DossierDto> racines)
     {
         var list = new List<TreeItemData<DossierDto>>();
@@ -134,15 +135,15 @@
             var node = new TreeItemData<DossierDto>
             {
                 Value = dossier,
-                Children = BuildChildren(dossier.SousDossiers)
+                Children = BuildChildrenAsList(dossier.SousDossiers) // ✅ Nouvelle méthode
             };
             list.Add(node);
         }
 
-        return list;
+        return list.AsReadOnly();
     }
 
-    private IReadOnlyCollection<TreeItemData<DossierDto>> BuildChildren(List<DossierDto> enfants)
+    private List<TreeItemData<DossierDto>> BuildChildrenAsList(List<DossierDto> enfants)
     {
         var list = new List<TreeItemData<DossierDto>>();
 
@@ -151,12 +152,12 @@
             var child = new TreeItemData<DossierDto>
             {
                 Value = d,
-                Children = BuildChildren(d.SousDossiers)
+                Children = BuildChildrenAsList(d.SousDossiers) // ✅ Récursif
             };
             list.Add(child);
         }
 
-        return list;
+        return list; // ✅ Retourne List directement
     }
 
     private async Task OnTreeSelectionChanged(DossierDto? dossier)
@@ -209,12 +210,11 @@
             FullWidth = true
         };
 
-        var dialog = await DialogService
-        .ShowAsync<Frontend.Components.Dialogs.SearchDialog>("Rechercher un dossier", options);
+        var dialog = await DialogService.ShowAsync<Frontend.Components.Dialogs.SearchDialog>("Rechercher un dossier", options);
 
         var result = await dialog.Result;
 
-        if (!result.Canceled && result.Data is DossierDto selectedDossier)
+        if (result != null && !result.Canceled && result.Data is DossierDto selectedDossier) // ✅ CORRECTION
         {
             await SelectDossier(selectedDossier);
         }

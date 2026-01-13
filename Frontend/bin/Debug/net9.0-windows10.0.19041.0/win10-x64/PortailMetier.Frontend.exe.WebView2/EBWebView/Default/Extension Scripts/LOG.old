@@ -1,3 +1,2 @@
-2026/01/13-14:04:39.792 1190 Reusing MANIFEST C:\dev\VSCode\PortailIDES\Frontend\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.exe.WebView2\EBWebView\Default\Extension Scripts/MANIFEST-000001
-2026/01/13-14:04:39.795 1190 Recovering log #3
-2026/01/13-14:04:39.798 1190 Reusing old log C:\dev\VSCode\PortailIDES\Frontend\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.exe.WebView2\EBWebView\Default\Extension Scripts/000003.log 
+2026/01/12-11:27:12.609 4a1c Creating DB C:\dev\VSCode\PortailIDES\Frontend\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.exe.WebView2\EBWebView\Default\Extension Scripts since it was missing.
+2026/01/12-11:27:12.637 4a1c Reusing MANIFEST C:\dev\VSCode\PortailIDES\Frontend\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.exe.WebView2\EBWebView\Default\Extension Scripts/MANIFEST-000001

@@ -10,10 +10,14 @@
 using System;
 using System.Reflection;
 
+[assembly: System.Reflection.AssemblyMetadataAttribute("Microsoft.Maui.ApplicationModel.AppInfo.PackageName", "com.companyname.portailmetier.frontend")]
+[assembly: System.Reflection.AssemblyMetadataAttribute("Microsoft.Maui.ApplicationModel.AppInfo.PublisherName", "User Name")]
+[assembly: System.Reflection.AssemblyMetadataAttribute("Microsoft.Maui.ApplicationModel.AppInfo.Name", "PortailMetier.Frontend")]
+[assembly: System.Reflection.AssemblyMetadataAttribute("Microsoft.Maui.ApplicationModel.AppInfo.Version", "1.0.0.1")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("PortailMetier.Frontend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c621337c4f16ab1f1c09d1e80f5878104439cf1a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+a2856d02342443b146acb597270123bd524620bf")]
 [assembly: System.Reflection.AssemblyProductAttribute("PortailMetier.Frontend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PortailMetier.Frontend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

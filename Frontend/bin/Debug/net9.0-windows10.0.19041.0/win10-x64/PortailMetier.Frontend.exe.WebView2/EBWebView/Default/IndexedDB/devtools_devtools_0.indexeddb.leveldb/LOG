@@ -1,2 +1,3 @@
-2026/01/13-14:04:37.783 1190 Creating DB C:\dev\VSCode\PortailIDES\Frontend\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.exe.WebView2\EBWebView\Default\IndexedDB\devtools_devtools_0.indexeddb.leveldb since it was missing.
-2026/01/13-14:04:37.824 1190 Reusing MANIFEST C:\dev\VSCode\PortailIDES\Frontend\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.exe.WebView2\EBWebView\Default\IndexedDB\devtools_devtools_0.indexeddb.leveldb/MANIFEST-000001
+2026/01/13-17:38:35.192 9b0c Reusing MANIFEST C:\dev\VSCode\PortailIDES\Frontend\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.exe.WebView2\EBWebView\Default\IndexedDB\devtools_devtools_0.indexeddb.leveldb/MANIFEST-000001
+2026/01/13-17:38:35.195 9b0c Recovering log #3
+2026/01/13-17:38:35.198 9b0c Reusing old log C:\dev\VSCode\PortailIDES\Frontend\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.exe.WebView2\EBWebView\Default\IndexedDB\devtools_devtools_0.indexeddb.leveldb/000003.log 

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PortailMetier.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c621337c4f16ab1f1c09d1e80f5878104439cf1a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a2856d02342443b146acb597270123bd524620bf")]
 [assembly: System.Reflection.AssemblyProductAttribute("PortailMetier.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PortailMetier.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
