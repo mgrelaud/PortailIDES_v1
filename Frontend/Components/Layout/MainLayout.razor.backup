@@ -1,0 +1,78 @@
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<!-- Configuration du thème MudBlazor avec thème personnalisé -->
+<MudThemeProvider @bind-IsDarkMode="_isDarkMode" Theme="_customTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Primary">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
+        @if (IsBackButtonVisible())
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" OnClick="@GoBack" />
+        }
+        <MudText Typo="Typo.h6" Class="ml-3">Portail Métier</MudText>
+        <MudSpacer />
+        <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+            <MudMenuItem OnClick="@(() => _isDarkMode = false)">Clair</MudMenuItem>
+            <MudMenuItem OnClick="@(() => _isDarkMode = true)">Sombre</MudMenuItem>
+        </MudMenu>
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Menu</MudText>
+        </MudDrawerHeader>
+        <NavMenu />
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+    private bool _isDarkMode = false;
+
+    // Définition du thème personnalisé
+    private MudTheme _customTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#0063cc",
+            Secondary = "#6e6e6e",
+            Background = "#f5f5f5",
+            Surface = "#ffffff",
+            AppbarBackground = "#0063cc"
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#0063cc",
+            Secondary = "#6e6e6e",
+            Background = "#1c1c19",
+            Surface = "#272720",
+            AppbarBackground = "#1c1c19"
+        }
+    };
+
+    private async Task GoBack()
+    {
+        await JSRuntime.InvokeVoidAsync("history.back");
+    }
+
+    private bool IsBackButtonVisible()
+    {
+        return NavigationManager.Uri != NavigationManager.BaseUri;
+    }
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}
