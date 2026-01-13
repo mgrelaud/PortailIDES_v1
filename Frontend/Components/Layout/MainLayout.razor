@@ -5,6 +5,7 @@
 <MudThemeProvider Theme="_customTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
+<MudPopoverProvider />
 
 <MudLayout>
     <MudAppBar Elevation="1" Color="Color.Primary">
@@ -15,8 +16,6 @@
         }
         <MudText Typo="Typo.h6" Class="ml-3">Portail Métier</MudText>
         <MudSpacer />
-        @* Menu de changement de thème temporairement désactivé (bug avec @bind-IsDarkMode dans MAUI) *@
-        @* TODO: Réimplémenter avec une approche différente *@
     </MudAppBar>
 
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -26,8 +25,8 @@
         <NavMenu />
     </MudDrawer>
 
-    <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudMainContent Class="d-flex flex-column" Style="height: 100vh; overflow: hidden;">
+        <MudContainer MaxWidth="MaxWidth.False" Class="flex-grow-1 pa-4" Style="height: 100%; overflow-y: auto;">
             @Body
         </MudContainer>
     </MudMainContent>

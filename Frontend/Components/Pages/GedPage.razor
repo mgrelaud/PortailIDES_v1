@@ -3,12 +3,11 @@
 @using System.IO
 @inject IDialogService DialogService
 
-<MudPaper Class="d-flex flex-column" Style="height: calc(100vh - 80px);" Elevation="0">
+<MudPaper Class="d-flex flex-column" Style="height: 100%; width: 100%;" Elevation="0">
     
     <!-- Barre d'outils en haut -->
     <MudToolBar Dense="true">
         <MudMenu Label="Récents" Variant="Variant.Text" EndIcon="@Icons.Material.Filled.ArrowDropDown">
-            <!-- On simulera les récents ici -->
             <MudMenuItem>25.01.116 MG GR POLE SANTE</MudMenuItem>
             <MudMenuItem>24.10.170 YB PE MANITOU</MudMenuItem>
         </MudMenu>
@@ -18,49 +17,66 @@
         <MudText Typo="Typo.body1"><b>25.01.116 MG GR POLE SANTE FONTENAY LE COMTE</b></MudText>
     </MudToolBar>
 
-    <!-- Zone principale -->
-    <MudGrid Spacing="0" Class="flex-grow-1" Style="overflow-y: auto;">
+    <!-- Zone principale avec hauteur flexible -->
+    <MudGrid Spacing="0" Class="flex-grow-1" Style="height: 0; overflow: hidden;">
         
         <!-- Colonne de gauche : Arborescence -->
-        <MudItem xs="4" Class="pa-2" Style="border-right: 1px solid var(--mud-palette-lines-default);">
+        <MudItem xs="12" sm="4" md="3" Class="pa-2" Style="border-right: 1px solid #ddd; height: 100%; overflow-y: auto;">
+            <MudText Typo="Typo.h6" Class="mb-2">Arborescence</MudText>
             <MudTreeView T="string" ExpandOnClick="true">
-                <MudTreeViewItem Value="@("25.01.116...")" Icon="@Icons.Material.Filled.Folder">
+                <MudTreeViewItem Value="@("25.01.116...")" Icon="@Icons.Material.Filled.Folder" Expanded="true">
                     <MudTreeViewItem Value="@("_CONTRAT")" Icon="@Icons.Material.Filled.Folder"/>
-                    <MudTreeViewItem Value="@("BETON")" Icon="@Icons.Material.Filled.Folder">
-                        <MudTreeViewItem Value="@("CALCULS&PLANS")" Icon="@Icons.Material.Filled.Folder">
-                            <MudTreeViewItem Value="@("I-APS")" Icon="@Icons.Material.Filled.Folder"/>
+                    <MudTreeViewItem Value="@("BETON")" Icon="@Icons.Material.Filled.Folder" Expanded="true">
+                        <MudTreeViewItem Value="@("CALCULS&PLANS")" Icon="@Icons.Material.Filled.Folder" Expanded="true">
+                            <MudTreeViewItem Value="@("I-APS")" Icon="@Icons.Material.Filled.Folder" @onclick="@(() => LoadFolder("I-APS"))" />
                         </MudTreeViewItem>
                     </MudTreeViewItem>
+                    <MudTreeViewItem Value="@("CHARPENTE")" Icon="@Icons.Material.Filled.Folder"/>
+                    <MudTreeViewItem Value="@("PLANS")" Icon="@Icons.Material.Filled.Folder"/>
                 </MudTreeViewItem>
             </MudTreeView>
         </MudItem>
 
         <!-- Colonne de droite : Liste des fichiers -->
-        <MudItem xs="8" Class="pa-2">
-            <MudTable Items="@_files" Hover="true" Dense="true">
+        <MudItem xs="12" sm="8" md="9" Class="pa-2" Style="height: 100%; overflow-y: auto;">
+            <MudText Typo="Typo.h6" Class="mb-2">Fichiers</MudText>
+            <MudTable Items="@_files" Hover="true" Dense="true" Striped="true" FixedHeader="true" Height="calc(100% - 50px)">
                 <HeaderContent>
-                    <MudTh>Nom</MudTh>
-                    <MudTh>Taille</MudTh>
-                    <MudTh>Type</MudTh>
-                    <MudTh>Modifié le</MudTh>
+                    <MudTh><MudTableSortLabel SortBy="new Func<FileData, object>(x => x.Name)">Nom</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel SortBy="new Func<FileData, object>(x => x.Size)">Taille</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel SortBy="new Func<FileData, object>(x => x.Type)">Type</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel SortBy="new Func<FileData, object>(x => x.Modified)">Modifié le</MudTableSortLabel></MudTh>
+                    <MudTh>Actions</MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd DataLabel="Nom">@context.Name</MudTd>
+                    <MudTd DataLabel="Nom">
+                        <MudIcon Icon="@GetFileIcon(context.Type)" Size="Size.Small" Class="mr-2" />
+                        @context.Name
+                    </MudTd>
                     <MudTd DataLabel="Taille">@context.Size</MudTd>
                     <MudTd DataLabel="Type">@context.Type</MudTd>
-                    <MudTd DataLabel="Modifié le">@context.Modified.ToString("g")</MudTd>
+                    <MudTd DataLabel="Modifié le">@context.Modified.ToString("dd/MM/yyyy HH:mm")</MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Size="Size.Small" Color="Color.Primary" Title="Ouvrir" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Download" Size="Size.Small" Color="Color.Info" Title="Télécharger" />
+                    </MudTd>
                 </RowTemplate>
             </MudTable>
         </MudItem>
     </MudGrid>
 
     <!-- Barre d'état en bas -->
-    <MudPaper Elevation="2" Class="pa-1" Square="true">
-        <MudText Typo="Typo.caption">\\SRVIDES\dossiers\25.01.116...\BETON\CALCULS&PLANS\I-APS</MudText>
+    <MudPaper Elevation="2" Class="pa-2" Square="true">
+        <MudText Typo="Typo.caption">
+            <MudIcon Icon="@Icons.Material.Filled.Folder" Size="Size.Small" Class="mr-1" />
+            @_currentPath
+        </MudText>
     </MudPaper>
 </MudPaper>
 
 @code {
+    private string _currentPath = @"\\SRVIDES\dossiers\25.01.116...\BETON\CALCULS&PLANS\I-APS";
+
     // Données de simulation pour la table
     private class FileData {
         public string Name { get; set; } = "";
@@ -69,18 +85,43 @@
         public DateTime Modified { get; set; }
     }
 
-    private IEnumerable<FileData> _files = new List<FileData>
+    private List<FileData> _files = new()
     {
         new FileData { Name = "REV2501_2501116.RVT", Size = "159 Mo", Type = "Fichier RVT", Modified = new DateTime(2025, 12, 18, 17, 56, 0) },
-        new FileData { Name = "Plan_Coffrage.pdf", Size = "2 Mo", Type = "Fichier PDF", Modified = new DateTime(2025, 12, 17, 11, 2, 0) }
+        new FileData { Name = "Plan_Coffrage.pdf", Size = "2 Mo", Type = "Fichier PDF", Modified = new DateTime(2025, 12, 17, 11, 2, 0) },
+        new FileData { Name = "Note_Calcul.docx", Size = "850 Ko", Type = "Fichier Word", Modified = new DateTime(2025, 12, 16, 14, 30, 0) },
+        new FileData { Name = "Tableau_Aciers.xlsx", Size = "125 Ko", Type = "Fichier Excel", Modified = new DateTime(2025, 12, 15, 10, 15, 0) }
     };
+
+    private string GetFileIcon(string fileType)
+    {
+        return fileType switch
+        {
+            "Fichier PDF" => Icons.Material.Filled.PictureAsPdf,
+            "Fichier RVT" => Icons.Material.Filled.Architecture,
+            "Fichier Word" => Icons.Material.Filled.Description,
+            "Fichier Excel" => Icons.Material.Filled.TableChart,
+            _ => Icons.Material.Filled.InsertDriveFile
+        };
+    }
+
+    private void LoadFolder(string folderName)
+    {
+        _currentPath = $@"\\SRVIDES\dossiers\25.01.116...\BETON\CALCULS&PLANS\{folderName}";
+        StateHasChanged();
+    }
 
     private async Task OpenSearchDialog()
     {
         var parameters = new DialogParameters();
-        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var options = new DialogOptions 
+        { 
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
         
-        var dialog = await DialogService.ShowAsync<SearchDialog>("Rechercher un dossier", parameters, options);
+        var dialog = DialogService.Show<SearchDialog>("Rechercher un dossier", parameters, options);
         var result = await dialog.Result;
         
         if (result != null && !result.Canceled)
