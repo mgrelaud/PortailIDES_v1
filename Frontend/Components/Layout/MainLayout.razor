@@ -1,6 +1,4 @@
 @inherits LayoutComponentBase
-@inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime
 
 <MudThemeProvider @bind-IsDarkMode="_isDarkMode" Theme="_customTheme" />
 <MudDialogProvider />
@@ -9,10 +7,6 @@
 <MudLayout>
     <MudAppBar Elevation="1" Color="Color.Primary">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
-        @if (IsBackButtonVisible())
-        {
-            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" OnClick="@GoBack" />
-        }
         <MudText Typo="Typo.h6" Class="ml-3">Portail Métier</MudText>
         <MudSpacer />
         <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
@@ -58,16 +52,6 @@
             AppbarBackground = "#1c1c19"
         }
     };
-
-    private async Task GoBack()
-    {
-        await JSRuntime.InvokeVoidAsync("history.back");
-    }
-
-    private bool IsBackButtonVisible()
-    {
-        return NavigationManager.Uri != NavigationManager.BaseUri;
-    }
 
     private void DrawerToggle()
     {
