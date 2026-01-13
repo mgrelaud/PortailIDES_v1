@@ -83,7 +83,7 @@
         var dialog = await DialogService.ShowAsync<SearchDialog>("Rechercher un dossier", parameters, options);
         var result = await dialog.Result;
         
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             // Traiter le résultat de la recherche si nécessaire
         }

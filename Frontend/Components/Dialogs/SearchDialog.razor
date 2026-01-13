@@ -8,10 +8,10 @@
         
         @if (_searchResults.Any())
         {
-            <MudList Clickable="true" Class="mt-4">
+            <MudList T="string" Clickable="true" Class="mt-4">
                 @foreach (var result in _searchResults)
                 {
-                    <MudListItem Text="@result" OnClick="@(() => SelectResult(result))" />
+                    <MudListItem T="string" Text="@result" OnClick="@(() => SelectResult(result))" />
                 }
             </MudList>
         }
@@ -28,12 +28,11 @@
 
 @code {
     [CascadingParameter] 
-    MudDialogInstance? MudDialog { get; set; }
+    private IDialogReference? DialogReference { get; set; }
 
     private string _searchText = "";
     private string _selectedResult = "";
 
-    // Simulation de résultats de recherche
     private List<string> _searchResults => string.IsNullOrWhiteSpace(_searchText) 
         ? new List<string>()
         : new List<string>
@@ -50,11 +49,11 @@
 
     private void Submit()
     {
-        MudDialog?.Close(DialogResult.Ok(_selectedResult));
+        DialogReference?.Close(DialogResult.Ok(_selectedResult));
     }
 
     private void Cancel()
     {
-        MudDialog?.Cancel();
+        DialogReference?.Close(DialogResult.Cancel());
     }
 }
