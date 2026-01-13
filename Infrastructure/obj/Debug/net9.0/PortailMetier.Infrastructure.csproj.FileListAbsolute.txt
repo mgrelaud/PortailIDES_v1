@@ -1,0 +1,16 @@
+C:\dev\VSCode\PortailIDES\Infrastructure\bin\Debug\net9.0\PortailMetier.Infrastructure.deps.json
+C:\dev\VSCode\PortailIDES\Infrastructure\bin\Debug\net9.0\PortailMetier.Infrastructure.dll
+C:\dev\VSCode\PortailIDES\Infrastructure\bin\Debug\net9.0\PortailMetier.Infrastructure.pdb
+C:\dev\VSCode\PortailIDES\Infrastructure\bin\Debug\net9.0\PortailMetier.Domain.dll
+C:\dev\VSCode\PortailIDES\Infrastructure\bin\Debug\net9.0\PortailMetier.Domain.pdb
+C:\dev\VSCode\PortailIDES\Infrastructure\obj\Debug\net9.0\PortailMetier.Infrastructure.csproj.AssemblyReference.cache
+C:\dev\VSCode\PortailIDES\Infrastructure\obj\Debug\net9.0\PortailMetier.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\dev\VSCode\PortailIDES\Infrastructure\obj\Debug\net9.0\PortailMetier.Infrastructure.AssemblyInfoInputs.cache
+C:\dev\VSCode\PortailIDES\Infrastructure\obj\Debug\net9.0\PortailMetier.Infrastructure.AssemblyInfo.cs
+C:\dev\VSCode\PortailIDES\Infrastructure\obj\Debug\net9.0\PortailMetier.Infrastructure.csproj.CoreCompileInputs.cache
+C:\dev\VSCode\PortailIDES\Infrastructure\obj\Debug\net9.0\PortailMetier.Infrastructure.sourcelink.json
+C:\dev\VSCode\PortailIDES\Infrastructure\obj\Debug\net9.0\PortailM.71777AA3.Up2Date
+C:\dev\VSCode\PortailIDES\Infrastructure\obj\Debug\net9.0\PortailMetier.Infrastructure.dll
+C:\dev\VSCode\PortailIDES\Infrastructure\obj\Debug\net9.0\refint\PortailMetier.Infrastructure.dll
+C:\dev\VSCode\PortailIDES\Infrastructure\obj\Debug\net9.0\PortailMetier.Infrastructure.pdb
+C:\dev\VSCode\PortailIDES\Infrastructure\obj\Debug\net9.0\ref\PortailMetier.Infrastructure.dll

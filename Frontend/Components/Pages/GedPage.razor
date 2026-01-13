@@ -1,132 +1,222 @@
 @page "/beorg/dossier"
 
-@using System.IO
+@using MudBlazor
+@using PortailMetier.Domain.Dtos
+@using PortailMetier.Domain.Interfaces
+
+@inject IJSRuntime JSRuntime
 @inject IDialogService DialogService
+@inject IGedService GedService
 
 <MudPaper Class="d-flex flex-column" Style="height: 100%; width: 100%;" Elevation="0">
-    
-    <!-- Barre d'outils en haut -->
+
+    <!-- Barre d’outils -->
     <MudToolBar Dense="true">
         <MudMenu Label="Récents" Variant="Variant.Text" EndIcon="@Icons.Material.Filled.ArrowDropDown">
             <MudMenuItem>25.01.116 MG GR POLE SANTE</MudMenuItem>
             <MudMenuItem>24.10.170 YB PE MANITOU</MudMenuItem>
         </MudMenu>
-        <MudButton Variant="Variant.Text" OnClick="@OpenSearchDialog">Rechercher</MudButton>
+
+        <MudButton Variant="Variant.Text" OnClick="@OpenSearchDialog">
+            Rechercher
+        </MudButton>
+
         <MudSpacer />
+
         <MudText Typo="Typo.body2" Class="mr-2">Dossier :</MudText>
-        <MudText Typo="Typo.body1"><b>25.01.116 MG GR POLE SANTE FONTENAY LE COMTE</b></MudText>
+        <MudText Typo="Typo.body1"><b>@_dossierCourant?.Nom</b></MudText>
     </MudToolBar>
 
-    <!-- Zone principale avec hauteur flexible -->
+    <!-- Corps -->
     <MudGrid Spacing="0" Class="flex-grow-1" Style="height: 0; overflow: hidden;">
-        
-        <!-- Colonne de gauche : Arborescence -->
-        <MudItem xs="12" sm="4" md="3" Class="pa-2" Style="border-right: 1px solid #ddd; height: 100%; overflow-y: auto;">
+
+        <!-- Arborescence -->
+        <MudItem xs="12" sm="4" md="3" Class="pa-2"
+            Style="border-right: 1px solid #ddd; height: 100%; overflow-y: auto;">
             <MudText Typo="Typo.h6" Class="mb-2">Arborescence</MudText>
-            <MudTreeView T="string" ExpandOnClick="true">
-                <MudTreeViewItem Value="@("25.01.116...")" Icon="@Icons.Material.Filled.Folder" Expanded="true">
-                    <MudTreeViewItem Value="@("_CONTRAT")" Icon="@Icons.Material.Filled.Folder"/>
-                    <MudTreeViewItem Value="@("BETON")" Icon="@Icons.Material.Filled.Folder" Expanded="true">
-                        <MudTreeViewItem Value="@("CALCULS&PLANS")" Icon="@Icons.Material.Filled.Folder" Expanded="true">
-                            <MudTreeViewItem Value="@("I-APS")" Icon="@Icons.Material.Filled.Folder" @onclick="@(() => LoadFolder("I-APS"))" />
-                        </MudTreeViewItem>
-                    </MudTreeViewItem>
-                    <MudTreeViewItem Value="@("CHARPENTE")" Icon="@Icons.Material.Filled.Folder"/>
-                    <MudTreeViewItem Value="@("PLANS")" Icon="@Icons.Material.Filled.Folder"/>
-                </MudTreeViewItem>
-            </MudTreeView>
+
+            @if (_isLoadingArborescence)
+            {
+                <MudProgressCircular Indeterminate="true" />
+            }
+            else
+            {
+                <MudTreeView T="DossierDto" Items="@_treeItems" CanSelect="true" SelectedValue="@_dossierCourant"
+                    SelectedValueChanged="@OnTreeSelectionChanged">
+
+                    <ItemTemplate>
+                        @{
+                            // context est TreeItemData<DossierDto> en v7
+                            var node = (TreeItemData<DossierDto>)context;
+                            var dossier = node.Value;
+                        }
+
+                        <MudTreeViewItem T="DossierDto" Value="@dossier" Text="@dossier.Nom"
+                            Icon="@Icons.Material.Filled.Folder" Items="@node.Children" />
+                    </ItemTemplate>
+                </MudTreeView>
+            }
         </MudItem>
 
-        <!-- Colonne de droite : Liste des fichiers -->
+        <!-- Fichiers -->
         <MudItem xs="12" sm="8" md="9" Class="pa-2" Style="height: 100%; overflow-y: auto;">
             <MudText Typo="Typo.h6" Class="mb-2">Fichiers</MudText>
-            <MudTable Items="@_files" Hover="true" Dense="true" Striped="true" FixedHeader="true" Height="calc(100% - 50px)">
+
+            <MudTable T="FichierDto" Items="@_fichiers" Hover="true" Dense="true" FixedHeader="true"
+                Height="calc(100% - 50px)" Loading="@_isLoadingFichiers">
+
                 <HeaderContent>
-                    <MudTh><MudTableSortLabel SortBy="new Func<FileData, object>(x => x.Name)">Nom</MudTableSortLabel></MudTh>
-                    <MudTh><MudTableSortLabel SortBy="new Func<FileData, object>(x => x.Size)">Taille</MudTableSortLabel></MudTh>
-                    <MudTh><MudTableSortLabel SortBy="new Func<FileData, object>(x => x.Type)">Type</MudTableSortLabel></MudTh>
-                    <MudTh><MudTableSortLabel SortBy="new Func<FileData, object>(x => x.Modified)">Modifié le</MudTableSortLabel></MudTh>
-                    <MudTh>Actions</MudTh>
+                    <MudTh>Nom</MudTh>
+                    <MudTh>Taille</MudTh>
+                    <MudTh>Type</MudTh>
+                    <MudTh>Modifié le</MudTh>
+                    <MudTh></MudTh>
                 </HeaderContent>
+
                 <RowTemplate>
                     <MudTd DataLabel="Nom">
                         <MudIcon Icon="@GetFileIcon(context.Type)" Size="Size.Small" Class="mr-2" />
-                        @context.Name
+                        @context.Nom
                     </MudTd>
-                    <MudTd DataLabel="Taille">@context.Size</MudTd>
+                    <MudTd DataLabel="Taille">@context.TailleHumaine</MudTd>
                     <MudTd DataLabel="Type">@context.Type</MudTd>
-                    <MudTd DataLabel="Modifié le">@context.Modified.ToString("dd/MM/yyyy HH:mm")</MudTd>
-                    <MudTd DataLabel="Actions">
-                        <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Size="Size.Small" Color="Color.Primary" Title="Ouvrir" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Download" Size="Size.Small" Color="Color.Info" Title="Télécharger" />
+                    <MudTd DataLabel="Modifié le">@context.DateModifUtc.ToLocalTime().ToString("g")</MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Size="Size.Small" Color="Color.Primary"
+                            Tooltip="Ouvrir" OnClick="@(() => OpenFile(context))" />
                     </MudTd>
                 </RowTemplate>
+
+                <NoRecordsContent>
+                    <MudText>Aucun fichier dans ce dossier.</MudText>
+                </NoRecordsContent>
             </MudTable>
         </MudItem>
     </MudGrid>
 
-    <!-- Barre d'état en bas -->
+    <!-- Bandeau chemin -->
     <MudPaper Elevation="2" Class="pa-2" Square="true">
         <MudText Typo="Typo.caption">
             <MudIcon Icon="@Icons.Material.Filled.Folder" Size="Size.Small" Class="mr-1" />
-            @_currentPath
+            @_dossierCourant?.CheminCompletUNC
         </MudText>
     </MudPaper>
 </MudPaper>
 
 @code {
-    private string _currentPath = @"\\SRVIDES\dossiers\25.01.116...\BETON\CALCULS&PLANS\I-APS";
+    private IReadOnlyCollection<TreeItemData<DossierDto>> _treeItems = Array.Empty<TreeItemData<DossierDto>>();
+    private DossierDto? _dossierCourant;
+    private List<FichierDto> _fichiers = new();
 
-    // Données de simulation pour la table
-    private class FileData {
-        public string Name { get; set; } = "";
-        public string Size { get; set; } = "";
-        public string Type { get; set; } = "";
-        public DateTime Modified { get; set; }
+    private bool _isLoadingArborescence = true;
+    private bool _isLoadingFichiers = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Récupère l'arbo DossierDto avec SousDossiers déjà remplis
+        var racines = await GedService.GetArborescenceDossiersAsync();
+        _treeItems = BuildTreeItems(racines);
+        _isLoadingArborescence = false;
+
+        if (racines.Any())
+        {
+            await SelectDossier(racines.First());
+        }
     }
 
-    private List<FileData> _files = new()
+    // Construction TreeItemData v7 : Value = DossierDto, Children = enfants
+    private IReadOnlyCollection<TreeItemData<DossierDto>> BuildTreeItems(List<DossierDto> racines)
     {
-        new FileData { Name = "REV2501_2501116.RVT", Size = "159 Mo", Type = "Fichier RVT", Modified = new DateTime(2025, 12, 18, 17, 56, 0) },
-        new FileData { Name = "Plan_Coffrage.pdf", Size = "2 Mo", Type = "Fichier PDF", Modified = new DateTime(2025, 12, 17, 11, 2, 0) },
-        new FileData { Name = "Note_Calcul.docx", Size = "850 Ko", Type = "Fichier Word", Modified = new DateTime(2025, 12, 16, 14, 30, 0) },
-        new FileData { Name = "Tableau_Aciers.xlsx", Size = "125 Ko", Type = "Fichier Excel", Modified = new DateTime(2025, 12, 15, 10, 15, 0) }
-    };
+        var list = new List<TreeItemData<DossierDto>>();
+
+        foreach (var dossier in racines)
+        {
+            var node = new TreeItemData<DossierDto>
+            {
+                Value = dossier,
+                Children = BuildChildren(dossier.SousDossiers)
+            };
+            list.Add(node);
+        }
+
+        return list;
+    }
+
+    private IReadOnlyCollection<TreeItemData<DossierDto>> BuildChildren(List<DossierDto> enfants)
+    {
+        var list = new List<TreeItemData<DossierDto>>();
+
+        foreach (var d in enfants)
+        {
+            var child = new TreeItemData<DossierDto>
+            {
+                Value = d,
+                Children = BuildChildren(d.SousDossiers)
+            };
+            list.Add(child);
+        }
+
+        return list;
+    }
+
+    private async Task OnTreeSelectionChanged(DossierDto? dossier)
+    {
+        if (dossier is null || dossier == _dossierCourant)
+            return;
+
+        await SelectDossier(dossier);
+    }
+
+    private async Task SelectDossier(DossierDto dossier)
+    {
+        _dossierCourant = dossier;
+        _isLoadingFichiers = true;
+        _fichiers.Clear();
+        StateHasChanged();
+
+        _fichiers = await GedService.GetFichiersAsync(dossier.CheminCompletUNC ?? string.Empty);
+        _isLoadingFichiers = false;
+        StateHasChanged();
+    }
+
+    private async Task OpenFile(FichierDto file)
+    {
+        if (string.IsNullOrWhiteSpace(file.CheminCompletUNC))
+            return;
+
+        var path = file.CheminCompletUNC.Replace('\\', '/');
+        await JSRuntime.InvokeVoidAsync("window.open", $"file:///{path}");
+    }
 
     private string GetFileIcon(string fileType)
     {
         return fileType switch
         {
             "Fichier PDF" => Icons.Material.Filled.PictureAsPdf,
-            "Fichier RVT" => Icons.Material.Filled.Architecture,
-            "Fichier Word" => Icons.Material.Filled.Description,
-            "Fichier Excel" => Icons.Material.Filled.TableChart,
+            "Fichier Revit" => Icons.Material.Filled.Architecture,
+            "Document Word" => Icons.Material.Filled.Description,
+            "Feuille de calcul Excel" => Icons.Material.Filled.TableChart,
             _ => Icons.Material.Filled.InsertDriveFile
         };
     }
 
-    private void LoadFolder(string folderName)
-    {
-        _currentPath = $@"\\SRVIDES\dossiers\25.01.116...\BETON\CALCULS&PLANS\{folderName}";
-        StateHasChanged();
-    }
-
     private async Task OpenSearchDialog()
     {
-        var parameters = new DialogParameters();
-        var options = new DialogOptions 
-        { 
+        var options = new DialogOptions
+        {
             CloseOnEscapeKey = true,
             MaxWidth = MaxWidth.Medium,
             FullWidth = true
         };
-        
-        var dialog = DialogService.Show<SearchDialog>("Rechercher un dossier", parameters, options);
+
+        var dialog = await DialogService
+        .ShowAsync<Frontend.Components.Dialogs.SearchDialog>("Rechercher un dossier", options);
+
         var result = await dialog.Result;
-        
-        if (result != null && !result.Canceled)
+
+        if (!result.Canceled && result.Data is DossierDto selectedDossier)
         {
-            // Traiter le résultat de la recherche si nécessaire
+            await SelectDossier(selectedDossier);
         }
     }
 }

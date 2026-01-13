@@ -1,0 +1,12 @@
+C:\dev\VSCode\PortailIDES\Domain\bin\Debug\net9.0\PortailMetier.Domain.deps.json
+C:\dev\VSCode\PortailIDES\Domain\bin\Debug\net9.0\PortailMetier.Domain.dll
+C:\dev\VSCode\PortailIDES\Domain\bin\Debug\net9.0\PortailMetier.Domain.pdb
+C:\dev\VSCode\PortailIDES\Domain\obj\Debug\net9.0\PortailMetier.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\dev\VSCode\PortailIDES\Domain\obj\Debug\net9.0\PortailMetier.Domain.AssemblyInfoInputs.cache
+C:\dev\VSCode\PortailIDES\Domain\obj\Debug\net9.0\PortailMetier.Domain.AssemblyInfo.cs
+C:\dev\VSCode\PortailIDES\Domain\obj\Debug\net9.0\PortailMetier.Domain.csproj.CoreCompileInputs.cache
+C:\dev\VSCode\PortailIDES\Domain\obj\Debug\net9.0\PortailMetier.Domain.sourcelink.json
+C:\dev\VSCode\PortailIDES\Domain\obj\Debug\net9.0\PortailMetier.Domain.dll
+C:\dev\VSCode\PortailIDES\Domain\obj\Debug\net9.0\refint\PortailMetier.Domain.dll
+C:\dev\VSCode\PortailIDES\Domain\obj\Debug\net9.0\PortailMetier.Domain.pdb
+C:\dev\VSCode\PortailIDES\Domain\obj\Debug\net9.0\ref\PortailMetier.Domain.dll

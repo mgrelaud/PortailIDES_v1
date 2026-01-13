@@ -97,7 +97,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>5439</FileLength>
-      <LastWriteTime>Tue, 13 Jan 2026 11:39:14 GMT</LastWriteTime>
+      <LastWriteTime>Tue, 13 Jan 2026 16:12:41 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\PortailMetier.Frontend.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>

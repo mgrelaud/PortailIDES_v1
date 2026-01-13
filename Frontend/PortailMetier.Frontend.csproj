@@ -63,4 +63,13 @@
         <PackageReference Include="MudBlazor" Version="8.15.0" />
     </ItemGroup>
 
+    <ItemGroup>
+        <MauiAsset Include="appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Infrastructure\PortailMetier.Infrastructure.csproj" />
+    </ItemGroup>
+
+
 </Project>
