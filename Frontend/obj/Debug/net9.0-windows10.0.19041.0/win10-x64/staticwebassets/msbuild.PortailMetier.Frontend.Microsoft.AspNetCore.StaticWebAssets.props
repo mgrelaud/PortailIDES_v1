@@ -32,12 +32,12 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>z4le8yljvr</Fingerprint>
-      <Integrity>g0KHXLuDXjQ1PBS87NzGR6C3D5BP0QCuVkvQM93tUA8=</Integrity>
+      <Fingerprint>9iwa27vona</Fingerprint>
+      <Integrity>EXE9R8rVZU5im9BMqts4xf7hLFm3RK6z1WJv8utznws=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <FileLength>850</FileLength>
-      <LastWriteTime>Sun, 11 Jan 2026 20:13:16 GMT</LastWriteTime>
+      <FileLength>966</FileLength>
+      <LastWriteTime>Tue, 13 Jan 2026 11:10:58 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\bootstrap\dist\css\bootstrap.min.css'))">
@@ -97,7 +97,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <FileLength>5439</FileLength>
-      <LastWriteTime>Mon, 12 Jan 2026 10:26:43 GMT</LastWriteTime>
+      <LastWriteTime>Tue, 13 Jan 2026 10:59:14 GMT</LastWriteTime>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\PortailMetier.Frontend.styles.css'))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>

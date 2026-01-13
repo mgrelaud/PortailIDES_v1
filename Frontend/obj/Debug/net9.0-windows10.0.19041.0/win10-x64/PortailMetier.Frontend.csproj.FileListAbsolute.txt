@@ -472,7 +472,6 @@ C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x6
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\tzxjg6is5z-{0}-7c7lhmh1j6-7c7lhmh1j6.gz
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\0wz98yz2xy-{0}-f96y5mhlyw-f96y5mhlyw.gz
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\r5w3ege2ft-{0}-kmn8zot022-kmn8zot022.gz
-C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\cml32ioa7n-{0}-z4le8yljvr-z4le8yljvr.gz
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\525jy9epbo-{0}-08mtdlppm0-08mtdlppm0.gz
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\wzvmiwha63-{0}-ca434j9tb9-ca434j9tb9.gz
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\wkd2mnk843-{0}-nktgwuqioh-nktgwuqioh.gz
@@ -491,7 +490,6 @@ C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x6
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\tzxjg6is5z-{0}-7c7lhmh1j6-7c7lhmh1j6.br
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\0wz98yz2xy-{0}-f96y5mhlyw-f96y5mhlyw.br
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\r5w3ege2ft-{0}-kmn8zot022-kmn8zot022.br
-C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\cml32ioa7n-{0}-z4le8yljvr-z4le8yljvr.br
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\525jy9epbo-{0}-08mtdlppm0-08mtdlppm0.br
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\wzvmiwha63-{0}-ca434j9tb9-ca434j9tb9.br
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\wkd2mnk843-{0}-nktgwuqioh-nktgwuqioh.br
@@ -574,6 +572,7 @@ C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x6
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.AssemblyInfoInputs.cache
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.AssemblyInfo.cs
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.csproj.CoreCompileInputs.cache
+C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.sourcelink.json
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\XamlC.stamp
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailM.6AC784D7.Up2Date
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\PortailMetier.Frontend.dll
@@ -596,3 +595,5 @@ C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x6
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\qualifiers.txt.intermediate
 C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\MultipleQualifiersPerDimensionFound.txt
+C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\cml32ioa7n-{0}-9iwa27vona-9iwa27vona.gz
+C:\dev\VSCode\PortailIDES\Frontend\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\compressed\publish\cml32ioa7n-{0}-9iwa27vona-9iwa27vona.br
