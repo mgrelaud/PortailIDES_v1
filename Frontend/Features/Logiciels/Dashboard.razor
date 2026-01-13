@@ -1,0 +1,46 @@
+@page "/logiciels"
+
+<MudText Typo="Typo.h4" Class="mb-4">Logiciels de Calcul</MudText>
+<MudText Class="mb-6">Lancez les principaux logiciels métier de l'entreprise.</MudText>
+
+<MudGrid Spacing="4">
+    <MudItem xs="12" sm="6">
+        <MudCard Elevation="2" Class="pa-4" Style="height:100%">
+            <MudCardHeader>
+                <CardHeaderAvatar>
+                    <MudIcon Icon="@Icons.Material.Filled.Calculate" Size="Size.Large" Color="Color.Primary"/>
+                </CardHeaderAvatar>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Quantitatif BA</MudText>
+                    <MudText Typo="Typo.body2">Migration du logiciel historique</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>Outil de métré et de calcul des quantités de béton et d'acier pour les projets en béton armé.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/quantitatif-ba/nouveau-calcul">Lancer</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" sm="6">
+        <MudCard Elevation="2" Class="pa-4" Style="height:100%">
+            <MudCardHeader>
+                <CardHeaderAvatar>
+                    <MudIcon Icon="@Icons.Material.Filled.Article" Size="Size.Large" Color="Color.Secondary"/>
+                </CardHeaderAvatar>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">EC_mas</MudText>
+                    <MudText Typo="Typo.body2">Migration du logiciel Delphi</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>Calculs spécifiques liés aux normes ECMS et gestion des fiches de calcul associées.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Href="/ecmas/nouvelle-fiche">Lancer</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>

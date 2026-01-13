@@ -1,0 +1,63 @@
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<!-- On lie la propriété IsDarkMode, qui sera gérée en C# uniquement -->
+<MudThemeProvider @bind-IsDarkMode="_isDarkMode" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Primary">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
+        @if (IsBackButtonVisible())
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Inherit" OnClick="@GoBack" />
+        }
+        <MudText Typo="Typo.h6" Class="ml-3">Portail Métier</MudText>
+        <MudSpacer />
+        <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+            <!-- Les boutons appellent une méthode qui ne fait PAS d'appel JS -->
+            <MudMenuItem OnClick="@(() => _isDarkMode = false)">Clair</MudMenuItem>
+            <MudMenuItem OnClick="@(() => _isDarkMode = true)">Sombre</MudMenuItem>
+        </MudMenu>
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Menu</MudText>
+        </MudDrawerHeader>
+        <NavMenu />
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    // --- Logique du bouton Retour (inchangée et stable) ---
+    private async Task GoBack()
+    {
+        // Cet appel JS ne pose pas de problème car il est déclenché par l'utilisateur,
+        // bien après le démarrage de l'application.
+        await JSRuntime.InvokeVoidAsync("history.back");
+    }
+
+    private bool IsBackButtonVisible()
+    {
+        return NavigationManager.Uri != NavigationManager.BaseUri;
+    }
+
+    // --- NOUVELLE LOGIQUE DE THÈME (SANS JS AU DÉMARRAGE) ---
+    private bool _isDarkMode = false; // On démarre toujours en thème clair.
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

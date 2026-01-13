@@ -1,0 +1,13 @@
+<MudPaper Elevation="0" Class="pa-4 mud-background-gray rounded-lg border-2 border-solid mud-border-error">
+    <div class="d-flex align-center">
+        <MudIcon Icon="@Icons.Material.Filled.Error" Color="Color.Error" Class="mr-3" />
+        <div>
+            <MudText Typo="Typo.subtitle1" Color="Color.Error"><b>Une erreur est survenue</b></MudText>
+            <MudText Typo="Typo.body2">@Message</MudText>
+        </div>
+    </div>
+</MudPaper>
+
+@code {
+    [Parameter] public string Message { get; set; } = "Impossible de charger les données.";
+}

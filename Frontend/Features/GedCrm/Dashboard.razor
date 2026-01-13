@@ -1,0 +1,22 @@
+@page "/beorg"
+
+<MudText Typo="Typo.h4" Class="mb-4">Tableau de Bord - BeOrg</MudText>
+<MudText Class="mb-6">Portail de gestion des dossiers, documents, et communications.</MudText>
+
+<MudGrid Spacing="4">
+    <MudItem xs="12" sm="6">
+        <MudPaper Elevation="2" Class="pa-4" Style="height:100%">
+            <MudText Typo="Typo.h6" GutterBottom="true">Gestion des Dossiers</MudText>
+            <MudText>Accédez à la liste des affaires, créez de nouveaux documents et consultez l'existant.</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/beorg/dossier" Class="mt-4">Voir les dossiers</MudButton>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="6">
+        <MudPaper Elevation="2" Class="pa-4" Style="height:100%">
+            <MudText Typo="Typo.h6" GutterBottom="true">Communication</MudText>
+            <MudText>Consultez l'agenda, le répertoire de contacts et recherchez dans les e-mails archivés.</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/beorg/agenda" Class="mt-4">Ouvrir l'agenda</MudButton>
+        </MudPaper>
+    </MudItem>
+</MudGrid>

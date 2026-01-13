@@ -1,0 +1,45 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\dev\\VSCode\\PortailIDES\\Frontend\\obj\\Debug\\net9.0-windows10.0.19041.0\\win10-x64\\scopedcss\\bundle\\PortailMetier.Frontend.styles.css",
+      "PackagePath": "staticwebassets\\PortailMetier.Frontend.styles.css"
+    },
+    {
+      "Id": "C:\\dev\\VSCode\\PortailIDES\\Frontend\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\dev\\VSCode\\PortailIDES\\Frontend\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "C:\\dev\\VSCode\\PortailIDES\\Frontend\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\dev\\VSCode\\PortailIDES\\Frontend\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.PortailMetier.Frontend.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.PortailMetier.Frontend.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.build.PortailMetier.Frontend.props",
+      "PackagePath": "build\\PortailMetier.Frontend.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.buildMultiTargeting.PortailMetier.Frontend.props",
+      "PackagePath": "buildMultiTargeting\\PortailMetier.Frontend.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0-windows10.0.19041.0\\win10-x64\\staticwebassets\\msbuild.buildTransitive.PortailMetier.Frontend.props",
+      "PackagePath": "buildTransitive\\PortailMetier.Frontend.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

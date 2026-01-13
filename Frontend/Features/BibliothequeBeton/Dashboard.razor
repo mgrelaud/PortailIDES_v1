@@ -1,0 +1,33 @@
+@page "/ba"
+
+<MudText Typo="Typo.h4" Class="mb-4">Menu Béton Armé</MudText>
+<MudText Class="mb-6">Outils de calcul et de vérification pour le béton armé selon les Eurocodes.</MudText>
+
+<MudGrid Spacing="4">
+    <MudItem xs="12" sm="6" md="4">
+        <MudPaper Elevation="2" Class="pa-4" Style="height:100%">
+            <MudIcon Icon="@Icons.Material.Filled.SquareFoot" Class="mb-2" Size="Size.Large" Color="Color.Primary"/>
+            <MudText Typo="Typo.h6" GutterBottom="true">Calculs Eurocode</MudText>
+            <MudText>Vérifications pour l'enrobage, l'ancrage, le poinçonnement, la torsion, etc.</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/ba/eurocode/enrobage" Class="mt-4">Commencer</MudButton>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="6" md="4">
+        <MudPaper Elevation="2" Class="pa-4" Style="height:100%">
+            <MudIcon Icon="@Icons.Material.Filled.Construction" Class="mb-2" Size="Size.Large" Color="Color.Secondary"/>
+            <MudText Typo="Typo.h6" GutterBottom="true">Outils d'Exécution</MudText>
+            <MudText>Aides pour les boîtes d'attentes, sections d'armatures, façonnage et dallage.</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/ba/execution/boites-attentes" Class="mt-4">Accéder</MudButton>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="6" md="4">
+        <MudPaper Elevation="2" Class="pa-4" Style="height:100%">
+            <MudIcon Icon="@Icons.Material.Filled.Functions" Class="mb-2" Size="Size.Large" Color="Color.Info"/>
+            <MudText Typo="Typo.h6" GutterBottom="true">Générateur de Combinaison</MudText>
+            <MudText>Créez et gérez vos combinaisons de charges pour les calculs.</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/ba/generateur-combinaison" Class="mt-4">Lancer</MudButton>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
