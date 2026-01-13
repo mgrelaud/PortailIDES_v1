@@ -2,8 +2,8 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
-<!-- On lie la propriété IsDarkMode, qui sera gérée en C# uniquement -->
-<MudThemeProvider @bind-IsDarkMode="_isDarkMode" />
+<!-- Configuration du thème MudBlazor avec thème personnalisé -->
+<MudThemeProvider @bind-IsDarkMode="_isDarkMode" Theme="_customTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -17,7 +17,6 @@
         <MudText Typo="Typo.h6" Class="ml-3">Portail Métier</MudText>
         <MudSpacer />
         <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
-            <!-- Les boutons appellent une méthode qui ne fait PAS d'appel JS -->
             <MudMenuItem OnClick="@(() => _isDarkMode = false)">Clair</MudMenuItem>
             <MudMenuItem OnClick="@(() => _isDarkMode = true)">Sombre</MudMenuItem>
         </MudMenu>
@@ -39,12 +38,31 @@
 
 @code {
     private bool _drawerOpen = true;
+    private bool _isDarkMode = false;
 
-    // --- Logique du bouton Retour (inchangée et stable) ---
+    // Définition du thème personnalisé
+    private MudTheme _customTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#0063cc",
+            Secondary = "#6e6e6e",
+            Background = "#f5f5f5",
+            Surface = "#ffffff",
+            AppbarBackground = "#0063cc"
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#0063cc",
+            Secondary = "#6e6e6e",
+            Background = "#1c1c19",
+            Surface = "#272720",
+            AppbarBackground = "#1c1c19"
+        }
+    };
+
     private async Task GoBack()
     {
-        // Cet appel JS ne pose pas de problème car il est déclenché par l'utilisateur,
-        // bien après le démarrage de l'application.
         await JSRuntime.InvokeVoidAsync("history.back");
     }
 
@@ -52,9 +70,6 @@
     {
         return NavigationManager.Uri != NavigationManager.BaseUri;
     }
-
-    // --- NOUVELLE LOGIQUE DE THÈME (SANS JS AU DÉMARRAGE) ---
-    private bool _isDarkMode = false; // On démarre toujours en thème clair.
 
     private void DrawerToggle()
     {
