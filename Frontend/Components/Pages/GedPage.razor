@@ -7,60 +7,75 @@
 @inject IJSRuntime JSRuntime
 @inject IDialogService DialogService
 @inject IGedService GedService
+@inject IRecentFoldersService RecentFoldersService
+@inject IFileOperationsService FileOps
 
 <MudPaper Class="d-flex flex-column" Style="height: 100%; width: 100%;" Elevation="0">
 
     <!-- Barre d'outils -->
     <MudToolBar Dense="true">
         <MudMenu Label="Récents" Variant="Variant.Text" EndIcon="@Icons.Material.Filled.ArrowDropDown">
-            <MudMenuItem>25.01.116 MG GR POLE SANTE</MudMenuItem>
-            <MudMenuItem>24.10.170 YB PE MANITOU</MudMenuItem>
+            @if (_menuRecentFolders.Any())
+            {
+                @foreach (var folder in _menuRecentFolders.Take(10))
+                {
+                    var folderCopy = folder;
+                    <MudMenuItem OnClick="@(async () => await SetRootFolder(folderCopy))">
+                        @folder.Nom
+                    </MudMenuItem>
+                }
+            }
+            else
+            {
+                <MudMenuItem Disabled="true">Aucun dossier récent</MudMenuItem>
+            }
         </MudMenu>
 
-        <MudButton Variant="Variant.Text" OnClick="@OpenSearchDialog">
+        <MudButton Variant="Variant.Text" OnClick="@OpenSearchDialog" StartIcon="@Icons.Material.Filled.Search">
             Rechercher
         </MudButton>
 
         <MudSpacer />
 
         <MudText Typo="Typo.body2" Class="mr-2">Dossier :</MudText>
-        <MudText Typo="Typo.body1"><b>@(_dossierCourant?.Nom ?? "Aucun")</b></MudText>
+        <MudText Typo="Typo.body1"><b>@(_dossierRacine?.Nom ?? "Aucun")</b></MudText>
     </MudToolBar>
 
     <!-- Corps -->
     <MudGrid Spacing="0" Class="flex-grow-1" Style="height: 0; overflow: hidden;">
 
-        <!-- Arborescence -->
+        <!-- Arborescence du dossier sélectionné -->
         <MudItem xs="12" sm="4" md="3" Class="pa-2"
             Style="border-right: 1px solid #ddd; height: 100%; overflow-y: auto;">
-            <MudText Typo="Typo.h6" Class="mb-2">Arborescence</MudText>
-
-            @if (_isLoadingArborescence)
+            
+            @if (_dossierRacine == null)
             {
-                <MudProgressCircular Indeterminate="true" />
+                <MudText Typo="Typo.body1" Class="pa-4" Color="Color.Secondary">
+                    <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-2" />
+                    Utilisez la recherche pour sélectionner un dossier projet.
+                </MudText>
             }
             else
             {
-                <MudTreeView T="DossierDto" Items="@_treeItems" CanSelect="true" SelectedValue="@_dossierCourant"
-                    SelectedValueChanged="@OnTreeSelectionChanged">
+                <MudTreeView T="DossierDto" @ref="_treeView" Items="@_treeItems" ServerData="LoadServerData" 
+                    SelectedValue="@_dossierCourant"
+                    SelectedValueChanged="@OnTreeSelectionChanged" ExpandOnClick="true">
 
                     <ItemTemplate>
-                        @{
-                            // context est TreeItemData<DossierDto> en v7
-                            var node = (TreeItemData<DossierDto>)context;
-                            var dossier = node.Value;
-                        }
-
-                        <MudTreeViewItem T="DossierDto" Value="@dossier" Text="@(dossier?.Nom ?? "")"
-                            Icon="@Icons.Material.Filled.Folder" Items="@node.Children" />
+                        <MudTreeViewItem Value="@context.Value" Text="@(context.Value?.Nom ?? "")"
+                             Icon="@context.Icon" LoadingIconColor="Color.Info" />
                     </ItemTemplate>
                 </MudTreeView>
             }
         </MudItem>
 
-        <!-- Fichiers -->
+        <!-- Fichiers du dossier sélectionné -->
         <MudItem xs="12" sm="8" md="9" Class="pa-2" Style="height: 100%; overflow-y: auto;">
-            <MudText Typo="Typo.h6" Class="mb-2">Fichiers</MudText>
+            <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-2">
+                <MudText Typo="Typo.h6">Fichiers</MudText>
+                <MudSpacer />
+                <MudText Typo="Typo.caption">@(_dossierCourant?.CheminCompletUNC ?? "")</MudText>
+            </MudStack>
 
             <MudTable T="FichierDto" Items="@_fichiers" Hover="true" Dense="true" FixedHeader="true"
                 Height="calc(100% - 50px)" Loading="@_isLoadingFichiers">
@@ -68,155 +83,159 @@
                 <HeaderContent>
                     <MudTh>Nom</MudTh>
                     <MudTh>Taille</MudTh>
-                    <MudTh>Type</MudTh>
+                    <MudTh>Type d'élément</MudTh>
                     <MudTh>Modifié le</MudTh>
-                    <MudTh></MudTh>
                 </HeaderContent>
 
                 <RowTemplate>
-                    <MudTd DataLabel="Nom">
-                        <MudIcon Icon="@GetFileIcon(context.Type)" Size="Size.Small" Class="mr-2" />
-                        @context.Nom
+                    @{
+                        var fileInfo = GetFileInfo(context.Nom);
+                    }
+                    <MudTd DataLabel="Nom" Class="pa-0">
+                        <MudMenu ActivationEvent="@MouseEvent.RightClick" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" Style="width:100%">
+                            <ActivatorContent>
+                                <div class="d-flex align-center pa-2 cursor-pointer" style="width:100%" 
+                                     @ondblclick="@(() => FileOps.OpenFile(context.CheminCompletUNC))">
+                                    <MudIcon Icon="@fileInfo.Icon" Style="@($"color:{fileInfo.Color}")" Size="Size.Small" Class="mr-2" />
+                                    <MudText>@context.Nom</MudText>
+                                </div>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <MudMenuItem Icon="@Icons.Material.Filled.OpenInNew" OnClick="@(() => FileOps.OpenFile(context.CheminCompletUNC))">Ouvrir</MudMenuItem>
+                                <MudMenuItem Icon="@Icons.Material.Filled.FolderOpen" OnClick="@(() => FileOps.OpenFolder(context.CheminCompletUNC))">Ouvrir l'emplacement</MudMenuItem>
+                                <MudDivider />
+                                <MudMenuItem Icon="@Icons.Material.Filled.ContentCopy" OnClick="@(() => FileOps.CopyToClipboard(context.CheminCompletUNC))">Copier</MudMenuItem>
+                                <MudMenuItem Icon="@Icons.Material.Filled.ContentCut" OnClick="@(() => FileOps.CutToClipboard(context.CheminCompletUNC))">Couper</MudMenuItem>
+                                <MudDivider />
+                                @if (context.Nom.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <MudMenuItem Icon="@Icons.Material.Filled.PictureAsPdf" OnClick="@(() => FileOps.MergePdfs(new List<string> { context.CheminCompletUNC }))">Fusionner avec PDF Creator</MudMenuItem>
+                                }
+                                <MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="@(() => FileOps.ShowFileProperties(context.CheminCompletUNC))">Propriétés</MudMenuItem>
+                            </ChildContent>
+                        </MudMenu>
                     </MudTd>
                     <MudTd DataLabel="Taille">@context.TailleHumaine</MudTd>
                     <MudTd DataLabel="Type">@context.Type</MudTd>
-                    <MudTd DataLabel="Modifié le">@context.DateModifUtc.ToLocalTime().ToString("g")</MudTd>
-                    <MudTd>
-                        <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Size="Size.Small" Color="Color.Primary"
-                            Tooltip="Ouvrir" OnClick="@(() => OpenFile(context))" />
-                    </MudTd>
+                    <MudTd DataLabel="Modifié le">@context.DateModifUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</MudTd>
                 </RowTemplate>
 
                 <NoRecordsContent>
-                    <MudText>Aucun fichier dans ce dossier.</MudText>
+                    <MudText Color="Color.Secondary">Aucun fichier dans ce dossier.</MudText>
                 </NoRecordsContent>
             </MudTable>
         </MudItem>
     </MudGrid>
 
-    <!-- Bandeau chemin -->
-    <MudPaper Elevation="2" Class="pa-2" Square="true">
-        <MudText Typo="Typo.caption">
-            <MudIcon Icon="@Icons.Material.Filled.Folder" Size="Size.Small" Class="mr-1" />
-            @(_dossierCourant?.CheminCompletUNC ?? "")
-        </MudText>
-    </MudPaper>
 </MudPaper>
 
 @code {
-    private IReadOnlyCollection<TreeItemData<DossierDto>> _treeItems = Array.Empty<TreeItemData<DossierDto>>();
+    private MudTreeView<DossierDto>? _treeView;
+    
+    // Le dossier racine sélectionné (via recherche) - on ne peut pas remonter au-dessus
+    private DossierDto? _dossierRacine;
     private DossierDto? _dossierCourant;
+    
+    private List<TreeItemData<DossierDto>> _treeItems = new();
     private List<FichierDto> _fichiers = new();
-
-    private bool _isLoadingArborescence = true;
+    private List<DossierDto> _menuRecentFolders = new();
     private bool _isLoadingFichiers = false;
 
     protected override async Task OnInitializedAsync()
     {
-        // Récupère l'arbo DossierDto avec SousDossiers déjà remplis
-        var racines = await GedService.GetArborescenceDossiersAsync();
-        _treeItems = BuildTreeItems(racines);
-        _isLoadingArborescence = false;
-
-        if (racines.Any())
+        _menuRecentFolders = RecentFoldersService.GetRecentFolders();
+        var lastFolder = RecentFoldersService.GetLastOpenedFolder();
+        if (lastFolder != null)
         {
-            await SelectDossier(racines.First());
+            await SetRootFolder(lastFolder);
         }
     }
 
-    // Construction TreeItemData v7 : Value = DossierDto, Children = enfants
-    // Construction TreeItemData v7 : Value = DossierDto, Children = enfants
-    private IReadOnlyCollection<TreeItemData<DossierDto>> BuildTreeItems(List<DossierDto> racines)
+    private async Task SetRootFolder(DossierDto folder)
     {
-        var list = new List<TreeItemData<DossierDto>>();
+        _dossierRacine = folder;
+        _dossierCourant = folder;
+        RecentFoldersService.AddRecentFolder(folder);
+        _menuRecentFolders = RecentFoldersService.GetRecentFolders();
 
-        foreach (var dossier in racines)
+        _treeItems = new List<TreeItemData<DossierDto>>
         {
-            var node = new TreeItemData<DossierDto>
+            new TreeItemData<DossierDto>
             {
-                Value = dossier,
-                Children = BuildChildrenAsList(dossier.SousDossiers) // ✅ Nouvelle méthode
-            };
-            list.Add(node);
-        }
+                Value = folder,
+                Text = folder.Nom,
+                Icon = Icons.Material.Filled.Folder,
+                Expanded = true, 
+                Expandable = folder.HasContent
+            }
+        };
 
-        return list.AsReadOnly();
+        await LoadFiles(folder.CheminCompletUNC);
+        StateHasChanged();
     }
 
-    private List<TreeItemData<DossierDto>> BuildChildrenAsList(List<DossierDto> enfants)
+    private async Task<IReadOnlyCollection<TreeItemData<DossierDto>>> LoadServerData(DossierDto? parentValue)
     {
-        var list = new List<TreeItemData<DossierDto>>();
-
-        foreach (var d in enfants)
+        if (parentValue == null) return Array.Empty<TreeItemData<DossierDto>>();
+        var subFolders = await GedService.GetSousDossiersAsync(parentValue.CheminCompletUNC);
+        return subFolders.Select(x => new TreeItemData<DossierDto>
         {
-            var child = new TreeItemData<DossierDto>
-            {
-                Value = d,
-                Children = BuildChildrenAsList(d.SousDossiers) // ✅ Récursif
-            };
-            list.Add(child);
-        }
-
-        return list; // ✅ Retourne List directement
+            Value = x,
+            Text = x.Nom,
+            Icon = x.HasContent ? Icons.Material.Filled.Folder : Icons.Material.Outlined.FolderOpen,
+            Expandable = x.HasContent
+        }).ToList();
     }
 
     private async Task OnTreeSelectionChanged(DossierDto? dossier)
     {
-        if (dossier is null || dossier == _dossierCourant)
-            return;
-
-        await SelectDossier(dossier);
+        if (dossier == null || dossier == _dossierCourant) return;
+        _dossierCourant = dossier;
+        await LoadFiles(dossier.CheminCompletUNC);
     }
 
-    private async Task SelectDossier(DossierDto dossier)
+    private async Task LoadFiles(string? path)
     {
-        _dossierCourant = dossier;
+        if (string.IsNullOrEmpty(path))
+        {
+            _fichiers.Clear();
+            return;
+        }
+
         _isLoadingFichiers = true;
         _fichiers.Clear();
         StateHasChanged();
 
-        _fichiers = await GedService.GetFichiersAsync(dossier.CheminCompletUNC ?? string.Empty);
+        _fichiers = await GedService.GetFichiersAsync(path);
         _isLoadingFichiers = false;
         StateHasChanged();
     }
 
-    private async Task OpenFile(FichierDto file)
+    private (string Icon, string Color) GetFileInfo(string fileName)
     {
-        if (string.IsNullOrWhiteSpace(file.CheminCompletUNC))
-            return;
-
-        var path = file.CheminCompletUNC.Replace('\\', '/');
-        await JSRuntime.InvokeVoidAsync("window.open", $"file:///{path}");
-    }
-
-    private string GetFileIcon(string fileType)
-    {
-        return fileType switch
+        var ext = Path.GetExtension(fileName).ToLowerInvariant();
+        return ext switch
         {
-            "Fichier PDF" => Icons.Material.Filled.PictureAsPdf,
-            "Fichier Revit" => Icons.Material.Filled.Architecture,
-            "Document Word" => Icons.Material.Filled.Description,
-            "Feuille de calcul Excel" => Icons.Material.Filled.TableChart,
-            _ => Icons.Material.Filled.InsertDriveFile
+            ".pdf" => (Icons.Material.Filled.PictureAsPdf, "#F44336"), // Red
+            ".rvt" => (Icons.Material.Filled.Architecture, "#2196F3"), // Blue
+            ".docx" or ".doc" => (Icons.Material.Filled.Description, "#1E88E5"), // Blue
+            ".xlsx" or ".xls" => (Icons.Material.Filled.TableChart, "#4CAF50"), // Green
+            ".dwg" => (Icons.Material.Filled.Architecture, "#FFA000"), // Amber
+            ".zip" or ".7z" or ".rar" => (Icons.Material.Filled.Archive, "#795548"), // Brown
+            ".txt" => (Icons.Material.Filled.TextSnippet, "#9E9E9E"), // Grey
+            ".jpg" or ".png" or ".bmp" => (Icons.Material.Filled.Image, "#E91E63"), // Pink
+            _ => (Icons.Material.Filled.InsertDriveFile, "#757575") // Grey
         };
     }
 
     private async Task OpenSearchDialog()
     {
-        var options = new DialogOptions
-        {
-            CloseOnEscapeKey = true,
-            MaxWidth = MaxWidth.Medium,
-            FullWidth = true
-        };
-
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
         var dialog = await DialogService.ShowAsync<Frontend.Components.Dialogs.SearchDialog>("Rechercher un dossier", options);
-
         var result = await dialog.Result;
-
-        if (result != null && !result.Canceled && result.Data is DossierDto selectedDossier) // ✅ CORRECTION
+        if (result != null && !result.Canceled && result.Data is DossierDto selectedDossier)
         {
-            await SelectDossier(selectedDossier);
+            await SetRootFolder(selectedDossier);
         }
     }
 }

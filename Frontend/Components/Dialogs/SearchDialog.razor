@@ -2,32 +2,91 @@
 @using PortailMetier.Domain.Dtos
 @using PortailMetier.Domain.Interfaces
 @inject IGedService GedService
+@inject IRecentFoldersService RecentFoldersService
 
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">Rechercher un dossier</MudText>
     </TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="_searchTerm" Label="Nom du dossier" Variant="Variant.Outlined"
-            Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="SearchDossiers"
-            OnKeyDown="HandleKeyDown" Immediate="true" DebounceInterval="300" Class="mb-4" />
+        <MudContainer Style="max-height: 500px; overflow-y: auto;">
+            <!-- Champ de recherche simple -->
+            <MudTextField @bind-Value="_searchTerm" 
+                Label="Rechercher..." 
+                Variant="Variant.Outlined"
+                Adornment="Adornment.Start"
+                AdornmentIcon="@Icons.Material.Filled.Search"
+                Immediate="true"
+                DebounceInterval="200"
+                TextChanged="@OnSearchChanged"
+                Class="mb-4" />
 
-        @if (_isLoading)
-        {
-            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-4" />
-        }
-        else
-        {
-            <MudList T="DossierDto" ReadOnly="false">
-                @foreach (var dossier in _searchResults)
-                {
-                    <MudListItem T="DossierDto" OnClick="@(() => SelectDossier(dossier))">
-                        <MudText>@dossier.Nom</MudText>
-                        <MudText Typo="Typo.caption">@dossier.CheminCompletUNC</MudText>
-                    </MudListItem>
-                }
-            </MudList>
-        }
+            <!-- Résultats de recherche -->
+            @if (!string.IsNullOrEmpty(_searchTerm) && _searchResults.Any())
+            {
+                <MudText Typo="Typo.subtitle2" Class="mb-2" Color="Color.Primary">
+                    <MudIcon Icon="@Icons.Material.Filled.Search" Size="Size.Small" Class="mr-1" />
+                    Résultats (@_searchResults.Count)
+                </MudText>
+                <MudList T="DossierDto" Dense="true" Class="py-0 mb-4">
+                    @foreach (var folder in _searchResults)
+                    {
+                        <MudListItem T="DossierDto" 
+                            Icon="@Icons.Material.Filled.Folder"
+                            IconColor="Color.Primary"
+                            OnClick="@(() => SelectFolder(folder))">
+                            @folder.Nom
+                        </MudListItem>
+                    }
+                </MudList>
+            }
+
+            <!-- Dossiers récents -->
+            @if (_recentFolders.Any())
+            {
+                <MudText Typo="Typo.subtitle2" Class="mb-2" Color="Color.Warning">
+                    <MudIcon Icon="@Icons.Material.Filled.History" Size="Size.Small" Class="mr-1" />
+                    Dossiers récents
+                </MudText>
+                <MudList T="DossierDto" Dense="true" Class="py-0 mb-4">
+                    @foreach (var folder in _recentFolders)
+                    {
+                        <MudListItem T="DossierDto" 
+                            Icon="@Icons.Material.Filled.FolderOpen"
+                            IconColor="Color.Warning"
+                            OnClick="@(() => SelectFolder(folder))">
+                            <MudStack Spacing="0">
+                                <MudText>@folder.Nom</MudText>
+                            </MudStack>
+                        </MudListItem>
+                    }
+                </MudList>
+            }
+
+            <!-- Tous les dossiers -->
+            <MudText Typo="Typo.subtitle2" Class="mb-2">
+                <MudIcon Icon="@Icons.Material.Filled.Folder" Size="Size.Small" Class="mr-1" />
+                Tous les dossiers
+            </MudText>
+            
+            @if (_isLoadingAll)
+            {
+                <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+            }
+            else
+            {
+                <MudList T="DossierDto" Dense="true" Class="py-0">
+                    @foreach (var folder in _allFolders)
+                    {
+                        <MudListItem T="DossierDto" 
+                            Icon="@Icons.Material.Filled.Folder"
+                            OnClick="@(() => SelectFolder(folder))">
+                            @folder.Nom
+                        </MudListItem>
+                    }
+                </MudList>
+            }
+        </MudContainer>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Annuler</MudButton>
@@ -38,43 +97,38 @@
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
 
     private string _searchTerm = string.Empty;
-    private List<DossierDto> _allDossiers = new();
     private List<DossierDto> _searchResults = new();
-    private bool _isLoading = false;
+    private List<DossierDto> _recentFolders = new();
+    private List<DossierDto> _allFolders = new();
+    private bool _isLoadingAll = true;
 
     protected override async Task OnInitializedAsync()
     {
-        _isLoading = true;
-        _allDossiers = await GedService.GetArborescenceDossiersAsync(recursive: true);
-        _isLoading = false;
+        // Charger les dossiers récents
+        _recentFolders = RecentFoldersService.GetRecentFolders();
+        
+        // Charger tous les dossiers (depuis le cache/index)
+        _allFolders = await GedService.GetSousDossiersAsync(null);
+        _isLoadingAll = false;
     }
 
-    private void SearchDossiers()
+    private async Task OnSearchChanged(string value)
     {
-        if (string.IsNullOrWhiteSpace(_searchTerm))
+        _searchTerm = value;
+        
+        if (string.IsNullOrWhiteSpace(value))
         {
             _searchResults.Clear();
             return;
         }
 
-        _searchResults = _allDossiers
-        .Where(d => d.Nom.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase))
-        .OrderBy(d => d.Nom)
-        .Take(20) // Limite les résultats pour la performance
-        .ToList();
+        _searchResults = await GedService.SearchDossiersAsync(value);
+        StateHasChanged();
     }
 
-    private void HandleKeyDown(KeyboardEventArgs e)
+    private void SelectFolder(DossierDto folder)
     {
-        if (e.Key == "Enter")
-        {
-            SearchDossiers();
-        }
-    }
-
-    private void SelectDossier(DossierDto dossier)
-    {
-        MudDialog.Close(DialogResult.Ok(dossier));
+        MudDialog.Close(DialogResult.Ok(folder));
     }
 
     void Cancel() => MudDialog.Cancel();

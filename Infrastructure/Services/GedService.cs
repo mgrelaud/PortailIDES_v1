@@ -8,18 +8,35 @@ namespace PortailMetier.Infrastructure.Services;
 public class GedService : IGedService
 {
     private readonly string _basePath;
+    private readonly IFolderIndexService _indexService;
     private List<DossierDto>? _cacheArborescence;
     private static readonly object _cacheLock = new();
+    
+    public string BasePath => _basePath;
 
-    public GedService(IConfiguration configuration)
+    public GedService(IConfiguration configuration, IFolderIndexService indexService)
     {
-        // Récupère le chemin depuis appsettings.json
         _basePath = configuration.GetValue<string>("GedSettings:BaseUncPath")
                     ?? throw new ArgumentNullException("Le chemin 'GedSettings:BaseUncPath' n'est pas configuré.");
+        _indexService = indexService;
+    }
+    
+    // Version rapide de HasContent - vérifie juste s'il y a des sous-dossiers ou fichiers
+    public static bool HasContentFast(DirectoryInfo d)
+    {
+        try
+        {
+            return d.EnumerateFileSystemInfos().Any();
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public Task<List<FichierDto>> GetFichiersAsync(string cheminDossierUnc)
     {
+        Console.WriteLine($"[GedService] GetFichiersAsync: '{cheminDossierUnc}'");
         var fichiersDto = new List<FichierDto>();
         try
         {
@@ -132,7 +149,74 @@ public class GedService : IGedService
     }
 
 
+    public async Task<List<DossierDto>> GetSousDossiersAsync(string? cheminDossierUnc = null)
+    {
+        // Si on demande la racine, utiliser l'index SQLite
+        if (string.IsNullOrWhiteSpace(cheminDossierUnc))
+        {
+            Console.WriteLine("[GedService] GetSousDossiersAsync: Returning root folders from SQLite index");
+            return await _indexService.GetRootFoldersAsync();
+        }
+
+        // Sinon, charger les sous-dossiers du chemin spécifié
+        Console.WriteLine($"[GedService] GetSousDossiersAsync: Loading from '{cheminDossierUnc}'");
+        var result = new List<DossierDto>();
+
+        try
+        {
+            var dirInfo = new DirectoryInfo(cheminDossierUnc);
+            if (!dirInfo.Exists) 
+            {
+                 Console.WriteLine($"[GedService] Path does not exist: {cheminDossierUnc}");
+                 return result;
+            }
+
+            result = dirInfo.GetDirectories()
+                            .Where(d => !d.Name.Equals("docupro", StringComparison.OrdinalIgnoreCase) 
+                                     && !d.Name.Equals("mels_du_dossier", StringComparison.OrdinalIgnoreCase))
+                            .Select(d => new DossierDto
+                            {
+                                Id = d.FullName,
+                                Nom = d.Name,
+                                CheminCompletUNC = d.FullName,
+                                HasContent = HasContentFast(d)
+                            })
+                            .OrderBy(d => d.Nom)
+                            .ToList();
+             Console.WriteLine($"[GedService] Found {result.Count} folders.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[GedService] Error reading folders: {ex.Message}");
+        }
+
+        return result;
+    }
+
+    public async Task<List<DossierDto>> SearchDossiersAsync(string term)
+    {
+        Console.WriteLine($"[GedService] SearchDossiersAsync: '{term}' (using SQLite index)");
+        
+        if (string.IsNullOrWhiteSpace(term)) 
+            return new List<DossierDto>();
+
+        return await _indexService.SearchAsync(term);
+    }
+
     // Fonctions utilitaires
+    private static bool HasContent(DirectoryInfo d)
+    {
+         try
+         {
+             // On regarde s'il y a au moins un fichier ou un dossier
+             return d.EnumerateFileSystemInfos().Any();
+         }
+         catch 
+         {
+             return false;
+         }
+    }
+
     private static string ToTailleHumaine(long length)
     {
         if (length == 0) return "0 B";

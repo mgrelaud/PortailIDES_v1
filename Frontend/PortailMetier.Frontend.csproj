@@ -54,9 +54,16 @@
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+
+        <EmbeddedResource Include="appsettings.json" />
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Azure.Identity" Version="1.17.1" />
+        <PackageReference Include="Microsoft.Graph" Version="5.100.0" />
+        <PackageReference Include="Microsoft.Identity.Client" Version="4.81.0" />
+        <PackageReference Include="Microsoft.Kiota.Abstractions" Version="1.21.1" />
+        <PackageReference Include="Microsoft.Kiota.Http.HttpClientLibrary" Version="1.21.1" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
@@ -64,12 +71,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <MauiAsset Include="appsettings.json" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Infrastructure\PortailMetier.Infrastructure.csproj" />
     </ItemGroup>
-
 
 </Project>

@@ -14,4 +14,7 @@ public interface IGedService
     /// Récupère la liste des fichiers pour un chemin de dossier UNC donné.
     /// </summary>
     Task<List<FichierDto>> GetFichiersAsync(string cheminDossierUnc);
+    Task<List<DossierDto>> GetSousDossiersAsync(string? cheminDossierUnc = null);
+    Task<List<DossierDto>> SearchDossiersAsync(string term);
+    string BasePath { get; }
 }
