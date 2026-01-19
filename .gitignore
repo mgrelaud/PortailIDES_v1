@@ -1,0 +1,12 @@
+# Fichiers et dossiers de compilation
+**/[Bb]in/
+**/[Oo]bj/
+
+# Fichiers générés par l'IDE
+*.user
+*.suo
+.vs/
+
+# Fichiers de log
+*.log
+*.txt
