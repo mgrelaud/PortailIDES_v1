@@ -1,6 +1,7 @@
-Stop-Process -Name "msedgewebview2", "PortailMetier.Frontend", "dotnet" -ErrorAction SilentlyContinue; Remove-Item -Path "Frontend\bin", "Frontend\obj" -Recurse -Force -ErrorAction SilentlyContinue; Remove-Item -Path "$env:LOCALAPPDATA\PortailMetier.Frontend" -Recurse -Force -ErrorAction SilentlyContinue
+dotnet build -t:Run -f net8.0-windows10.0.19041.0 src\Presentation\IDES.Portail.MAUI\IDES.Portail.MAUI.csproj
 
-dotnet run --project Frontend/PortailMetier.Frontend.csproj -f net9.0-windows10.0.19041.0
+dotnet run --project src\Presentation\IDES.Portail.MAUI\IDES.Portail.MAUI.csproj -f net8.0-windows10.0.19041.0
+
 
 git add .
 git commit -m "MAJ"
