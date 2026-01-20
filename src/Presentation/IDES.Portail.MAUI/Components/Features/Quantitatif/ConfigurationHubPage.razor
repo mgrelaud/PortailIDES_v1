@@ -1,0 +1,27 @@
+@* /Components/Features/Quantitatif/ConfigurationHubPage.razor *@
+@page "/quantitatif/configuration"
+@layout QuantitatifLayout
+@inject NavigationManager NavigationManager
+
+
+<MudText Typo="Typo.h5" GutterBottom="true">Configuration du Module Quantitatif</MudText>
+<MudText Class="mb-4">Sélectionnez une option ci-dessous pour gérer les données de base du module.</MudText>
+
+<MudGrid>
+    <MudItem xs="12" sm="6">
+        <MudPaper Class="pa-4 d-flex flex-column" Style="height: 100%;">
+            <MudText Typo="Typo.h6">Catalogue d'Éléments</MudText>
+            <MudText Class="flex-grow-1 mb-4">Gérer les types d'ouvrages disponibles (poutres, dalles, etc.) et leurs propriétés par défaut.</MudText>
+            <MudButton OnClick="@(() => NavigationManager.NavigateTo("/quantitatif/configuration/catalogue"))" 
+                       Variant="Variant.Filled" Color="Color.Primary">Gérer le Catalogue</MudButton>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <MudPaper Class="pa-4 d-flex flex-column" Style="height: 100%;">
+            <MudText Typo="Typo.h6">Bibliothèque de Propriétés</MudText>
+            <MudText Class="flex-grow-1 mb-4">Gérer la liste de toutes les propriétés utilisables dans le catalogue (Largeur, Ratio Acier, etc.).</MudText>
+             <MudButton OnClick="@(() => NavigationManager.NavigateTo("/quantitatif/configuration/proprietes"))" 
+                       Variant="Variant.Filled" Color="Color.Primary">Gérer les Propriétés</MudButton>
+        </MudPaper>
+    </MudItem>
+</MudGrid>

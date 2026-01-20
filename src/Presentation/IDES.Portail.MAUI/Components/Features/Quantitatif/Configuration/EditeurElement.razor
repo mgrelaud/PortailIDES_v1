@@ -1,6 +1,6 @@
-@page "/quantitatif/catalogue/editeur"
-@page "/quantitatif/catalogue/editeur/{Id:int}"
-@layout QuantitatifRoot
+@page "/quantitatif/configuration/editeur"
+@page "/quantitatif/configuration/editeur/{Id:int}"
+@layout QuantitatifLayout
 @using Microsoft.AspNetCore.Components.Sections
 @inject ICatalogueService CatalogueService
 @inject NavigationManager NavigationManager
@@ -10,17 +10,9 @@
     Quantitatif Béton - Éditeur
 </SectionContent>
 
-<SectionContent SectionName="FeatureMenu">
-    <MudNavMenu>
-        <MudNavLink Href="/quantitatif/metre" Match="NavLinkMatch.Prefix">Métré</MudNavLink>
-        <MudNavLink Href="/quantitatif/catalogue" Match="NavLinkMatch.Prefix">Catalogue</MudNavLink>
-        <MudNavLink Href="/quantitatif/options" Match="NavLinkMatch.Prefix">Options</MudNavLink>
-    </MudNavMenu>
-</SectionContent>
-
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
     <MudBreadcrumbs Items="_breadcrumbs" />
-    
+
     <MudText Typo="Typo.h4" GutterBottom="true">@(_isNew ? "Nouvel Élément" : $"Édition : {_element.Nom}")</MudText>
 
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
@@ -28,33 +20,42 @@
             <MudForm @ref="_form" @bind-IsValid="@_success">
                 <MudGrid>
                     <MudItem xs="12" md="6">
-                        <MudTextField T="string" Label="Nom de l'élément" Required="true" @bind-Value="_element.Nom" HelperText="Ex: Poutre BA" />
+                        <MudTextField T="string" Label="Nom de l'élément" Required="true" @bind-Value="_element.Nom"
+                            HelperText="Ex: Poutre BA" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudTextField T="string" Label="Catégorie" Required="true" @bind-Value="_element.Categorie" HelperText="Ex: Poutres, Dalles" />
+                        <MudTextField T="string" Label="Catégorie" Required="true" @bind-Value="_element.Categorie"
+                            HelperText="Ex: Poutres, Dalles" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudTextField T="string" Label="Préfixe Repère" @bind-Value="_element.PrefixeRepere" HelperText="Ex: P-" />
+                        <MudTextField T="string" Label="Préfixe Repère" @bind-Value="_element.PrefixeRepere"
+                            HelperText="Ex: P-" />
                     </MudItem>
                     <MudItem xs="12" md="6">
-                        <MudTextField T="string" Label="Template Désignation" @bind-Value="_element.DesignationTemplate" HelperText="Ex: Poutre {Largeur}x{Hauteur}" />
+                        <MudTextField T="string" Label="Template Désignation" @bind-Value="_element.DesignationTemplate"
+                            HelperText="Ex: Poutre {Largeur}x{Hauteur}" />
                     </MudItem>
                 </MudGrid>
             </MudForm>
         </MudTabPanel>
-        
+
         <MudTabPanel Text="Propriétés">
             <MudGrid>
-                <MudItem xs="12" md="4">
+                <MudItem xs="12" md="6">
                     <MudText Typo="Typo.h6" GutterBottom="true">Ajouter une propriété</MudText>
-                    <MudSelect T="DefinitionPropriete" Label="Propriété" Value="_selectedProp" ValueChanged="OnProprieteSelected" Dense="true" Placeholder="Sélectionner...">
-                        @foreach (var prop in _toutesLesProprietes.Where(p => !(_element.ProprietesAssociees?.Any(pa => pa.DefinitionProprieteId == p.Id) ?? false)))
-                        {
-                            <MudSelectItem Value="@prop">@prop.NomAffichage (@prop.TypeDonnee)</MudSelectItem>
-                        }
-                    </MudSelect>
+                    <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudSelect T="DefinitionPropriete" Label="Propriété" Value="_selectedProp"
+                            ValueChanged="OnProprieteSelected" Dense="true" Placeholder="Sélectionner...">
+                            @foreach (var prop in _toutesLesProprietes.Where(p => !(_element.ProprietesAssociees?.Any(pa
+                                                        => pa.DefinitionProprieteId == p.Id) ?? false)))
+                            {
+                                <MudSelectItem Value="@prop">@prop.NomAffichage (@prop.TypeDonnee)</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings" Title="Gérer les propriétés"
+                            Href="/quantitatif/configuration/proprietes" Target="_blank" Color="Color.Default" />
+                    </MudStack>
                 </MudItem>
-                
                 <MudItem xs="12">
                     <MudTable Items="@_element.ProprietesAssociees" Hover="true" Elevation="0" Dense="true">
                         <HeaderContent>
@@ -67,12 +68,13 @@
                             <MudTd>@(context.DefinitionPropriete?.NomAffichage ?? "Propriété inconnue")</MudTd>
                             <MudTd>@(context.DefinitionPropriete?.TypeDonnee ?? "-")</MudTd>
                             <MudTd>
-                                <MudTextField T="string" @bind-Value="context.Valeur" 
-                                              Placeholder="@(context.DefinitionPropriete?.TypeDonnee == "Formule" ? "Ex: {Largeur}*{Hauteur}" : "Valeur par défaut")" 
-                                              Margin="Margin.Dense" />
+                                <MudTextField T="string" @bind-Value="context.Valeur"
+                                    Placeholder="@(context.DefinitionPropriete?.TypeDonnee == "Formule" ? "Ex: {Largeur}*{Hauteur}" : "Valeur par défaut")"
+                                    Margin="Margin.Dense" />
                             </MudTd>
                             <MudTd>
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => SupprimerAssociation(context))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                    Size="Size.Small" OnClick="@(() => SupprimerAssociation(context))" />
                             </MudTd>
                         </RowTemplate>
                         <NoRecordsContent>
@@ -120,16 +122,16 @@
         }
 
         _breadcrumbs = new List<BreadcrumbItem>
-        {
-            new BreadcrumbItem("Catalogue", href: "/quantitatif/catalogue"),
-            new BreadcrumbItem(_isNew ? "Nouveau" : "Édition", href: null, disabled: true)
-        };
+{
+new BreadcrumbItem("Catalogue", href: "/quantitatif/catalogue"),
+new BreadcrumbItem(_isNew ? "Nouveau" : "Édition", href: null, disabled: true)
+};
     }
 
     private void OnProprieteSelected(DefinitionPropriete prop)
     {
         if (prop == null) return;
-        
+
         var association = new ElementPropriete
         {
             DefinitionElementId = _element.Id,
@@ -137,7 +139,7 @@
             DefinitionPropriete = prop,
             Valeur = prop.ValeurParDefaut
         };
-        
+
         _element.ProprietesAssociees.Add(association);
         _selectedProp = null; // Reset selection
     }

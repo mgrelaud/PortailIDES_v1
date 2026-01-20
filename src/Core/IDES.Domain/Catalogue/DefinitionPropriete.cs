@@ -33,5 +33,7 @@ namespace IDES.Domain.Catalogue
         /// Collection des associations où cette propriété est utilisée.
         /// </summary>
         public virtual ICollection<ElementPropriete> ElementsAssocies { get; set; } = new List<ElementPropriete>();
+
+        public override string ToString() => NomAffichage;
     }
 }

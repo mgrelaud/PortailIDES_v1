@@ -30,5 +30,7 @@ namespace IDES.Domain.Catalogue
         /// Ex: Pour la propriété "Volume" sur l'élément "Poutre", la valeur pourrait être "{Hauteur}*{Largeur}".
         /// </summary>
         public string? Valeur { get; set; }
+
+        public override string ToString() => DefinitionPropriete?.NomAffichage ?? "Association sans propriété";
     }
 }

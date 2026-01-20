@@ -11,7 +11,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IWeatherForecastService, WeatherForecastService>();
         services.AddSingleton<IGedService, GedService>();
         services.AddSingleton<IRecentFoldersService, RecentFoldersService>();
         services.AddSingleton<IFolderIndexService, FolderIndexService>();
@@ -30,5 +29,13 @@ public static class DependencyInjection
             options.UseSqlite($"Data Source={dbPath}"));
 
         return services;
+    }
+
+    public static void InitializeDatabase(this IServiceProvider services)
+    {
+        using var scope = services.CreateScope();
+        var dbFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<CatalogueDbContext>>();
+        using var db = dbFactory.CreateDbContext();
+        db.Database.Migrate();
     }
 }

@@ -1,5 +1,5 @@
-@page "/quantitatif/catalogue"
-@layout QuantitatifRoot
+@page "/quantitatif/configuration/catalogue"
+@layout QuantitatifLayout
 @using Microsoft.AspNetCore.Components.Sections
 @inject ICatalogueService CatalogueService
 @inject NavigationManager NavigationManager
@@ -8,14 +8,6 @@
 
 <SectionContent SectionName="FeatureTitle">
     Quantitatif Béton - Catalogue
-</SectionContent>
-
-<SectionContent SectionName="FeatureMenu">
-    <MudNavMenu>
-        <MudNavLink Href="/quantitatif/metre" Match="NavLinkMatch.Prefix">Métré</MudNavLink>
-        <MudNavLink Href="/quantitatif/catalogue" Match="NavLinkMatch.Prefix">Catalogue</MudNavLink>
-        <MudNavLink Href="/quantitatif/options" Match="NavLinkMatch.Prefix">Options</MudNavLink>
-    </MudNavMenu>
 </SectionContent>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">

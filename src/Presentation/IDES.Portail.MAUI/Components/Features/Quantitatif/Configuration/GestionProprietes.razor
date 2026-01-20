@@ -1,5 +1,5 @@
-@page "/quantitatif/catalogue/proprietes"
-@layout QuantitatifRoot
+@page "/quantitatif/configuration/proprietes"
+@layout QuantitatifLayout
 @using Microsoft.AspNetCore.Components.Sections
 @inject ICatalogueService CatalogueService
 @inject ISnackbar Snackbar
@@ -7,14 +7,6 @@
 
 <SectionContent SectionName="FeatureTitle">
     Quantitatif Béton - Propriétés
-</SectionContent>
-
-<SectionContent SectionName="FeatureMenu">
-    <MudNavMenu>
-        <MudNavLink Href="/quantitatif/metre" Match="NavLinkMatch.Prefix">Métré</MudNavLink>
-        <MudNavLink Href="/quantitatif/catalogue" Match="NavLinkMatch.Prefix">Catalogue</MudNavLink>
-        <MudNavLink Href="/quantitatif/options" Match="NavLinkMatch.Prefix">Options</MudNavLink>
-    </MudNavMenu>
 </SectionContent>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">

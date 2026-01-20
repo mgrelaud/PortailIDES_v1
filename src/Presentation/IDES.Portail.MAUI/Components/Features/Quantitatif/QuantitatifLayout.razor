@@ -1,0 +1,73 @@
+@* /Components/Features/Quantitatif/QuantitatifLayout.razor (CORRIGÉ) *@
+@layout MainLayout
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+<MudPaper Elevation="0" Class="d-flex flex-column" Style="height: 100%;">
+    
+    @* 1. LIER L'ONGLET ACTIF *@
+    <MudTabs Elevation="1" Rounded="true" Centered="true" Class="mb-4" @bind-ActivePanelIndex="_activeIndex">
+        <MudTabPanel Text="Accueil" />
+        <MudTabPanel Text="Métré" />
+        <MudTabPanel Text="Configuration" />
+    </MudTabs>
+
+    <div class="flex-grow-1" style="overflow-y: auto;">
+        @Body
+    </div>
+
+</MudPaper>
+
+@code {
+    private int _activeIndex;
+
+    // 2. DÉTECTER LE CHANGEMENT D'URL
+    protected override void OnInitialized()
+    {
+        SetIndexFromUrl(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        SetIndexFromUrl(e.Location);
+        StateHasChanged(); // Force le re-rendu du layout
+    }
+
+    private void SetIndexFromUrl(string url)
+    {
+        if (url.Contains("/quantitatif/metre"))
+            _activeIndex = 1;
+        else if (url.Contains("/quantitatif/configuration"))
+            _activeIndex = 2;
+        else // Par défaut, c'est l'accueil
+            _activeIndex = 0;
+    }
+
+    // 3. GÉRER LE CLIC SUR LES ONGLETS
+    // On ne peut plus utiliser OnClick, car on est lié à l'index.
+    // On va gérer le changement d'index.
+    private int ActiveIndex
+    {
+        get => _activeIndex;
+        set
+        {
+            if (_activeIndex != value)
+            {
+                _activeIndex = value;
+                switch (value)
+                {
+                    case 0: NavigationManager.NavigateTo("/quantitatif/accueil"); break;
+                    case 1: NavigationManager.NavigateTo("/quantitatif/metre"); break;
+                    case 2: NavigationManager.NavigateTo("/quantitatif/configuration"); break;
+                }
+            }
+        }
+    }
+
+    // N'oubliez pas de vous désabonner de l'événement pour éviter les fuites de mémoire
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

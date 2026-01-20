@@ -21,15 +21,10 @@
     </MudAppBar>
 
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <SectionOutlet SectionName="DrawerContent" />
-
-        <SectionContent SectionName="DrawerContent" IsDefaultContent="true">
-            @* Ce contenu ne s'affichera QUE si aucune autre page ne remplit la section *@
-            <MudDrawerHeader>
-                <MudText Typo="Typo.h6">Menu</MudText>
-            </MudDrawerHeader>
-            <NavMenu />
-        </SectionContent>
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Menu</MudText>
+        </MudDrawerHeader>
+        <NavMenu />
     </MudDrawer>
 
     <MudMainContent Class="d-flex flex-column" Style="height: 100vh; overflow: hidden;">
