@@ -10,14 +10,17 @@
 {
     <MudAlert Severity="Severity.Warning">
         Veuillez vous connecter pour voir votre calendrier.
-        <MudButton Link="/" Variant="Variant.Text" Color="Color.Primary">Aller à l'accueil</MudButton>
+        <MudNavLink Href="/" Icon="@Icons.Material.Filled.Home">Aller à l'accueil</MudNavLink>
     </MudAlert>
 }
 else if (_isLoading)
 {
     <div class="d-flex justify-center pa-10">
         <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
-        <MudText VerticalAlign="VerticalAlign.Middle" Class="ml-4">Chargement des événements...</MudText>
+        <div class="d-flex justify-center pa-10">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+            <MudText Class="d-flex align-center ml-4">Chargement des événements...</MudText>
+        </div>
     </div>
 }
 else
@@ -47,7 +50,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         _isAuthenticated = GraphService.IsAuthenticated;
-        
+
         if (_isAuthenticated)
         {
             await LoadCalendarEvents();

@@ -129,8 +129,12 @@ public static class MauiProgram
         });
 
         builder.Services.AddTransient<MainPage>();
-        builder.Services.AddSingleton<App>();
 
-        return builder.Build();
+        var app = builder.Build();
+        
+        // Initialisation de la base de données
+        app.Services.InitializeDatabase();
+
+        return app;
     }
 }

@@ -1,0 +1,178 @@
+@page "/quantitatif/catalogue/editeur"
+@page "/quantitatif/catalogue/editeur/{Id:int}"
+@layout QuantitatifRoot
+@using Microsoft.AspNetCore.Components.Sections
+@inject ICatalogueService CatalogueService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<SectionContent SectionName="FeatureTitle">
+    Quantitatif Béton - Éditeur
+</SectionContent>
+
+<SectionContent SectionName="FeatureMenu">
+    <MudNavMenu>
+        <MudNavLink Href="/quantitatif/metre" Match="NavLinkMatch.Prefix">Métré</MudNavLink>
+        <MudNavLink Href="/quantitatif/catalogue" Match="NavLinkMatch.Prefix">Catalogue</MudNavLink>
+        <MudNavLink Href="/quantitatif/options" Match="NavLinkMatch.Prefix">Options</MudNavLink>
+    </MudNavMenu>
+</SectionContent>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
+    <MudBreadcrumbs Items="_breadcrumbs" />
+    
+    <MudText Typo="Typo.h4" GutterBottom="true">@(_isNew ? "Nouvel Élément" : $"Édition : {_element.Nom}")</MudText>
+
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="Informations Générales">
+            <MudForm @ref="_form" @bind-IsValid="@_success">
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" Label="Nom de l'élément" Required="true" @bind-Value="_element.Nom" HelperText="Ex: Poutre BA" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" Label="Catégorie" Required="true" @bind-Value="_element.Categorie" HelperText="Ex: Poutres, Dalles" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" Label="Préfixe Repère" @bind-Value="_element.PrefixeRepere" HelperText="Ex: P-" />
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudTextField T="string" Label="Template Désignation" @bind-Value="_element.DesignationTemplate" HelperText="Ex: Poutre {Largeur}x{Hauteur}" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Propriétés">
+            <MudGrid>
+                <MudItem xs="12" md="4">
+                    <MudText Typo="Typo.h6" GutterBottom="true">Ajouter une propriété</MudText>
+                    <MudSelect T="DefinitionPropriete" Label="Propriété" Value="_selectedProp" ValueChanged="OnProprieteSelected" Dense="true" Placeholder="Sélectionner...">
+                        @foreach (var prop in _toutesLesProprietes.Where(p => !(_element.ProprietesAssociees?.Any(pa => pa.DefinitionProprieteId == p.Id) ?? false)))
+                        {
+                            <MudSelectItem Value="@prop">@prop.NomAffichage (@prop.TypeDonnee)</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                
+                <MudItem xs="12">
+                    <MudTable Items="@_element.ProprietesAssociees" Hover="true" Elevation="0" Dense="true">
+                        <HeaderContent>
+                            <MudTh>Nom</MudTh>
+                            <MudTh>Type</MudTh>
+                            <MudTh>Valeur / Formule par défaut</MudTh>
+                            <MudTh Style="width: 50px"></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@(context.DefinitionPropriete?.NomAffichage ?? "Propriété inconnue")</MudTd>
+                            <MudTd>@(context.DefinitionPropriete?.TypeDonnee ?? "-")</MudTd>
+                            <MudTd>
+                                <MudTextField T="string" @bind-Value="context.Valeur" 
+                                              Placeholder="@(context.DefinitionPropriete?.TypeDonnee == "Formule" ? "Ex: {Largeur}*{Hauteur}" : "Valeur par défaut")" 
+                                              Margin="Margin.Dense" />
+                            </MudTd>
+                            <MudTd>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => SupprimerAssociation(context))" />
+                            </MudTd>
+                        </RowTemplate>
+                        <NoRecordsContent>
+                            <MudText>Aucune propriété associée.</MudText>
+                        </NoRecordsContent>
+                    </MudTable>
+                </MudItem>
+            </MudGrid>
+        </MudTabPanel>
+    </MudTabs>
+
+    <div class="d-flex justify-end mt-6">
+        <MudButton Variant="Variant.Filled" Color="Color.Default" OnClick="Annuler" Class="mr-2">Annuler</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Enregistrer">Enregistrer</MudButton>
+    </div>
+</MudContainer>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private DefinitionElement _element = new();
+    private List<DefinitionPropriete> _toutesLesProprietes = new();
+    private DefinitionPropriete? _selectedProp;
+    private bool _isNew => Id == 0;
+    private bool _success;
+    private MudForm _form = null!;
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _toutesLesProprietes = await CatalogueService.GetToutesLesProprietesAsync();
+
+        if (!_isNew)
+        {
+            var element = await CatalogueService.GetElementByIdAsync(Id);
+            if (element != null)
+            {
+                _element = element;
+            }
+            else
+            {
+                Snackbar.Add("Élément introuvable", Severity.Error);
+                NavigationManager.NavigateTo("/quantitatif/catalogue");
+            }
+        }
+
+        _breadcrumbs = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Catalogue", href: "/quantitatif/catalogue"),
+            new BreadcrumbItem(_isNew ? "Nouveau" : "Édition", href: null, disabled: true)
+        };
+    }
+
+    private void OnProprieteSelected(DefinitionPropriete prop)
+    {
+        if (prop == null) return;
+        
+        var association = new ElementPropriete
+        {
+            DefinitionElementId = _element.Id,
+            DefinitionProprieteId = prop.Id,
+            DefinitionPropriete = prop,
+            Valeur = prop.ValeurParDefaut
+        };
+        
+        _element.ProprietesAssociees.Add(association);
+        _selectedProp = null; // Reset selection
+    }
+
+    private async Task SupprimerAssociation(ElementPropriete association)
+    {
+        _element.ProprietesAssociees.Remove(association);
+        if (association.Id != 0)
+        {
+            await CatalogueService.DeleteElementProprieteAsync(association.Id);
+        }
+    }
+
+    private void Annuler()
+    {
+        NavigationManager.NavigateTo("/quantitatif/catalogue");
+    }
+
+    private async Task Enregistrer()
+    {
+        if (_form != null)
+        {
+            await _form.Validate();
+            if (!_form.IsValid) return;
+        }
+
+        try
+        {
+            await CatalogueService.SaveElementAsync(_element);
+            Snackbar.Add("Élément enregistré avec succès", Severity.Success);
+            NavigationManager.NavigateTo("/quantitatif/catalogue");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Erreur lors de l'enregistrement : {ex.Message}", Severity.Error);
+        }
+    }
+}

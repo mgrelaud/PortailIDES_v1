@@ -1,0 +1,106 @@
+@page "/quantitatif/catalogue"
+@layout QuantitatifRoot
+@using Microsoft.AspNetCore.Components.Sections
+@inject ICatalogueService CatalogueService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<SectionContent SectionName="FeatureTitle">
+    Quantitatif Béton - Catalogue
+</SectionContent>
+
+<SectionContent SectionName="FeatureMenu">
+    <MudNavMenu>
+        <MudNavLink Href="/quantitatif/metre" Match="NavLinkMatch.Prefix">Métré</MudNavLink>
+        <MudNavLink Href="/quantitatif/catalogue" Match="NavLinkMatch.Prefix">Catalogue</MudNavLink>
+        <MudNavLink Href="/quantitatif/options" Match="NavLinkMatch.Prefix">Options</MudNavLink>
+    </MudNavMenu>
+</SectionContent>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-8">
+    <MudText Typo="Typo.h4" GutterBottom="true">Gestion du Catalogue</MudText>
+
+    <MudTable Items="@_elements" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" GroupBy="@_groupDefinition" Elevation="0">
+        <ToolBarContent>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AjouterElement" StartIcon="@Icons.Material.Filled.Add">Nouvel Élément</MudButton>
+            <MudSpacer />
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Nom</MudTh>
+            <MudTh>Préfixe Repère</MudTh>
+            <MudTh>Template Désignation</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <GroupHeaderTemplate>
+            <MudTh Class="mud-table-cell-custom-group" colspan="4">@($"{context.GroupName}: {context.Key}")</MudTh>
+        </GroupHeaderTemplate>
+        <RowTemplate>
+            <MudTd DataLabel="Nom">@context.Nom</MudTd>
+            <MudTd DataLabel="Préfixe">@context.PrefixeRepere</MudTd>
+            <MudTd DataLabel="Template">@context.DesignationTemplate</MudTd>
+            <MudTd DataLabel="Actions">
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Info" OnClick="@(() => EditerElement(context.Id))" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => SupprimerElement(context))" />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudContainer>
+
+@code {
+    private List<DefinitionElement> _elements = new();
+    private bool _loading = true;
+
+    private TableGroupDefinition<DefinitionElement> _groupDefinition = new()
+    {
+        GroupName = "Catégorie",
+        Indentation = false,
+        Expandable = true,
+        IsInitiallyExpanded = true,
+        Selector = (e) => e.Categorie
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        _loading = true;
+        _elements = await CatalogueService.GetCatalogueAsync();
+        _loading = false;
+    }
+
+    private void AjouterElement()
+    {
+        NavigationManager.NavigateTo("/quantitatif/catalogue/editeur");
+    }
+
+    private void EditerElement(int id)
+    {
+        NavigationManager.NavigateTo($"/quantitatif/catalogue/editeur/{id}");
+    }
+
+    private async Task SupprimerElement(DefinitionElement element)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Confirmation", 
+            $"Voulez-vous vraiment supprimer l'élément '{element.Nom}' ?", 
+            yesText: "Supprimer", cancelText: "Annuler");
+
+        if (result == true)
+        {
+            await CatalogueService.DeleteElementAsync(element.Id);
+            Snackbar.Add("Élément supprimé", Severity.Success);
+            await LoadData();
+        }
+    }
+}
+
+<style>
+    .mud-table-cell-custom-group {
+        font-weight: 500;
+        background-color: var(--mud-palette-background-grey);
+    }
+</style>

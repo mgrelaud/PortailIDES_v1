@@ -1,0 +1,19 @@
+@* /Components/Features/Quantitatif/QuantitatifRoot.razor *@
+@page "/quantitatif"
+@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Sections
+
+@* On remplit la section "DrawerContent" du MainLayout avec notre menu spécifique *@
+<SectionContent SectionName="DrawerContent">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">Quantitatif</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <MudNavLink Href="/quantitatif/metre" Match="NavLinkMatch.Prefix">Métré</MudNavLink>
+        <MudNavLink Href="/quantitatif/catalogue" Match="NavLinkMatch.Prefix">Catalogue</MudNavLink>
+        <MudNavLink Href="/quantitatif/options" Match="NavLinkMatch.Prefix">Options</MudNavLink>
+    </MudNavMenu>
+</SectionContent>
+
+@* Le contenu des sous-pages (metre, catalogue...) sera affiché ici *@
+@Body

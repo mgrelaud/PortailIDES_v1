@@ -1,0 +1,248 @@
+@page "/quantitatif/metre"
+@layout QuantitatifRoot
+@using IDES.Domain.Catalogue
+@using IDES.Domain.Metre
+@using IDES.Domain
+@using System.Collections.ObjectModel
+@using Microsoft.AspNetCore.Components.Sections
+
+<SectionContent SectionName="FeatureTitle">
+    Quantitatif Béton - Métré
+</SectionContent>
+
+<SectionContent SectionName="FeatureMenu">
+    <MudNavMenu>
+        <MudNavLink Href="/quantitatif/metre" Match="NavLinkMatch.Prefix">Métré</MudNavLink>
+        <MudNavLink Href="/quantitatif/catalogue" Match="NavLinkMatch.Prefix">Catalogue</MudNavLink>
+        <MudNavLink Href="/quantitatif/options" Match="NavLinkMatch.Prefix">Options</MudNavLink>
+    </MudNavMenu>
+</SectionContent>
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
+    <MudGrid>
+        <!-- Colonne de Gauche : Catalogue et Actions -->
+        <MudItem xs="3">
+            <MudPaper Class="pa-4" Style="height: 80vh; overflow-y: auto;">
+                <MudText Typo="Typo.h6" Class="mb-4">CATALOGUE</MudText>
+                
+                <MudTreeView T="object" @bind-SelectedValue="_selectedNode" Hover="true">
+                    @foreach (var group in _groupedCatalogue)
+                    {
+                        <MudTreeViewItem Value="@((object)group.Key)" Text="@group.Key" Icon="@Icons.Material.Filled.Folder">
+                            @foreach (var element in group.Value)
+                            {
+                                <MudTreeViewItem Value="@((object)element)" Text="@element.Nom" Icon="@Icons.Material.Filled.InsertDriveFile" />
+                            }
+                        </MudTreeViewItem>
+                    }
+                </MudTreeView>
+
+                <MudStack Class="mt-6" Spacing="2">
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Primary" 
+                               StartIcon="@Icons.Material.Filled.Add"
+                               OnClick="AjouterAuMetre"
+                               Disabled="@(!(_selectedNode is DefinitionElement))">
+                        Ajouter au métré
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" 
+                               Color="Color.Secondary" 
+                               StartIcon="@Icons.Material.Filled.Title"
+                               OnClick="AjouterTitre">
+                        Insérer un titre
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Colonne de Droite : Totaux et Grille -->
+        <MudItem xs="9">
+            <TotauxBar Beton="@MetreService.TotalGeneralBeton" 
+                       Acier="@MetreService.TotalGeneralAcier" 
+                       Coffrage="@MetreService.TotalGeneralCoffrage" 
+                       OnExportExcel="ExporterExcel" />
+
+            <MudDataGrid Items="@MetreService.Metre" 
+                         T="object"
+                         EditMode="DataGridEditMode.Cell" 
+                         Bordered="true" 
+                         Dense="true" 
+                         Hover="true"
+                         ReadOnly="false">
+                <Columns>
+                    <TemplateColumn Title="ÉLÉMENTS PROJETÉS" T="object">
+                        <CellTemplate>
+                            @if (context.Item is ElementDynamique element)
+                            {
+                                <MudStack Spacing="0">
+                                    <MudText Typo="Typo.body2"><b>@element.Repere</b></MudText>
+                                    <MudText Typo="Typo.caption">@element.Designation</MudText>
+                                </MudStack>
+                            }
+                            else if (context.Item is TitreElement titre)
+                            {
+                                <MudText Typo="Typo.body1" Class="mud-theme-primary pa-1 px-2" Style="font-weight: bold; width: 100%;">
+                                    @titre.Numero @titre.Texte
+                                </MudText>
+                            }
+                        </CellTemplate>
+                        <EditTemplate>
+                            @if (context.Item is TitreElement titre)
+                            {
+                                <MudStack Row="true">
+                                    <MudTextField @bind-Value="titre.Numero" Label="N°" Margin="Margin.Dense" Style="width: 50px;" />
+                                    <MudTextField @bind-Value="titre.Texte" Label="Titre" Margin="Margin.Dense" />
+                                </MudStack>
+                            }
+                            else if (context.Item is ElementDynamique element)
+                            {
+                                <MudTextField @bind-Value="element.Repere" Label="Repère" Margin="Margin.Dense" />
+                            }
+                        </EditTemplate>
+                    </TemplateColumn>
+
+                    <TemplateColumn Title="AV METRE" T="object" HeaderStyle="width: 150px;">
+                        <CellTemplate>
+                            @if (context.Item is ElementDynamique element)
+                            {
+                                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                    <MudText Typo="Typo.body2">@element.AvantMetreQuantite</MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">@element.AvantMetreUnite</MudText>
+                                </MudStack>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+
+                    <!-- Colonnes de Saisie (Dimensions) -->
+                    <TemplateColumn Title="NB" T="object" HeaderStyle="width: 80px;">
+                        <CellTemplate>
+                            @if (context.Item is ElementDynamique element && element.GetPropriete("Nombre") != null)
+                            {
+                                @element.GetValeurDouble("Nombre").ToString("N2")
+                            }
+                        </CellTemplate>
+                        <EditTemplate>
+                            @if (context.Item is ElementDynamique element && element.GetPropriete("Nombre") != null)
+                            {
+                                <MudNumericField T="double" 
+                                                 Value="@element.GetValeurDouble("Nombre")" 
+                                                 ValueChanged="@(v => element.SetValeurDouble("Nombre", v))"
+                                                 Margin="Margin.Dense" />
+                            }
+                        </EditTemplate>
+                    </TemplateColumn>
+
+                    <TemplateColumn Title="LONG." T="object" HeaderStyle="width: 80px;">
+                        <CellTemplate>
+                            @if (context.Item is ElementDynamique element && element.GetPropriete("Longueur") != null)
+                            {
+                                @element.GetValeurDouble("Longueur").ToString("N2")
+                            }
+                        </CellTemplate>
+                        <EditTemplate>
+                            @if (context.Item is ElementDynamique element && element.GetPropriete("Longueur") != null)
+                            {
+                                <MudNumericField T="double" 
+                                                 Value="@element.GetValeurDouble("Longueur")" 
+                                                 ValueChanged="@(v => element.SetValeurDouble("Longueur", v))"
+                                                 Margin="Margin.Dense" />
+                            }
+                        </EditTemplate>
+                    </TemplateColumn>
+
+                    <TemplateColumn Title="BÉTON" T="object">
+                        <CellTemplate>
+                            @if (context.Item is ElementDynamique element)
+                            {
+                                @(((double?)element.VolumeBeton)?.ToString("N3"))
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+
+                    <TemplateColumn Title="ACIER (H.A.)" T="object">
+                        <CellTemplate>
+                            @if (context.Item is ElementDynamique element)
+                            {
+                                @(((double?)element.TotalAcierHA)?.ToString("N2"))
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+
+                    <TemplateColumn Title="COFFRAGE" T="object">
+                        <CellTemplate>
+                            @if (context.Item is ElementDynamique element)
+                            {
+                                @(((double?)element.TotalCoffrage)?.ToString("N2"))
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+
+                    <TemplateColumn T="object" CellClass="d-flex justify-end">
+                        <CellTemplate>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => SupprimerElement(context.Item))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Size="Size.Small" OnClick="@(() => DeplacerHaut(context.Item))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward" Size="Size.Small" OnClick="@(() => DeplacerBas(context.Item))" />
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+            </MudDataGrid>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Inject] private IElementFactory ElementFactory { get; set; } = default!;
+    [Inject] private ICatalogueService CatalogueService { get; set; } = default!;
+    [Inject] private IMetreService MetreService { get; set; } = default!;
+
+    private object? _selectedNode;
+    private Dictionary<string, List<DefinitionElement>> _groupedCatalogue = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var elements = await CatalogueService.GetCatalogueAsync();
+        _groupedCatalogue = elements
+            .GroupBy(e => e.Categorie)
+            .ToDictionary(g => string.IsNullOrEmpty(g.Key) ? "Divers" : g.Key, g => g.ToList());
+    }
+
+    private void AjouterAuMetre()
+    {
+        if (_selectedNode is DefinitionElement definition)
+        {
+            var element = ElementFactory.CreerElementDynamique(definition);
+            MetreService.AjouterElement(element);
+            StateHasChanged();
+        }
+    }
+
+    private void AjouterTitre()
+    {
+        var titre = new TitreElement { Texte = "NOUVEAU TITRE", Numero = "1/" };
+        MetreService.AjouterTitre(titre);
+        StateHasChanged();
+    }
+
+    private void SupprimerElement(object item)
+    {
+        MetreService.SupprimerElement(item);
+        StateHasChanged();
+    }
+
+    private void DeplacerHaut(object item)
+    {
+        MetreService.DeplacerHaut(item);
+        StateHasChanged();
+    }
+
+    private void DeplacerBas(object item)
+    {
+        MetreService.DeplacerBas(item);
+        StateHasChanged();
+    }
+
+    private void ExporterExcel()
+    {
+        // Logique d'exportation (à implémenter ultérieurement)
+    }
+}

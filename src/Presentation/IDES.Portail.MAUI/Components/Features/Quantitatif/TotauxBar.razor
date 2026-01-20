@@ -1,0 +1,18 @@
+<MudPaper Class="pa-4 mb-4" Elevation="1">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+        <MudStack Row="true" Spacing="4">
+            <MudText Typo="Typo.h6">TOTAUX :</MudText>
+            <MudText Typo="Typo.h6">Béton: <b>@Beton.ToString("N3") m³</b></MudText>
+            <MudText Typo="Typo.h6">Acier: <b>@Acier.ToString("N0") kg</b></MudText>
+            <MudText Typo="Typo.h6">Coffrage: <b>@Coffrage.ToString("N2") m²</b></MudText>
+        </MudStack>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnExportExcel">Exporter en Excel</MudButton>
+    </MudStack>
+</MudPaper>
+
+@code {
+    [Parameter] public double Beton { get; set; }
+    [Parameter] public double Acier { get; set; }
+    [Parameter] public double Coffrage { get; set; }
+    [Parameter] public EventCallback OnExportExcel { get; set; }
+}

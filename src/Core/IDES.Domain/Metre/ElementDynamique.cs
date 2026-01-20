@@ -109,6 +109,34 @@ namespace IDES.Domain.Metre
         public object? TotalAcierTS => _calculator.GetValue("TotalAcierTS");
 
         // =================================================================
+        // ACCÈS AUX PROPRIÉTÉS PAR NOM (pour le DataGrid)
+        // =================================================================
+
+        public Propriete? GetPropriete(string nom)
+        {
+            return Proprietes.FirstOrDefault(p => p.Nom == nom);
+        }
+
+        public double GetValeurDouble(string nom)
+        {
+            var prop = GetPropriete(nom);
+            if (prop is Propriete<double> propDouble)
+            {
+                return propDouble.Valeur;
+            }
+            return 0;
+        }
+
+        public void SetValeurDouble(string nom, double valeur)
+        {
+            var prop = GetPropriete(nom);
+            if (prop is Propriete<double> propDouble)
+            {
+                propDouble.Valeur = valeur;
+            }
+        }
+
+        // =================================================================
         // PROPRIÉTÉS DE PRÉSENTATION POUR LA DATAGRID
         // =================================================================
 

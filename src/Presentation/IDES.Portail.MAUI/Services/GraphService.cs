@@ -101,15 +101,33 @@ public class GraphService
         }
     }
 
-    /// <summary>
+     /// <summary>
     /// Récupère l'objet Window parent pour l'authentification interactive
     /// </summary>
     private object? GetParentWindow()
     {
 #if WINDOWS
-        return ((MauiWinUIWindow)App.Current!.Windows[0].Handler.PlatformView).WindowHandle;
+        // 1. Vérifier que l'application et sa fenêtre principale existent
+        if (App.Current?.Windows is not null && App.Current.Windows.Count > 0)
+        {
+            // 2. Récupérer la première fenêtre
+            var window = App.Current.Windows[0];
+
+            // 3. S'assurer que le handler et la vue de la plateforme sont prêts
+            if (window.Handler?.PlatformView is not null)
+            {
+                // 4. Tenter la conversion et retourner le handle
+                // On utilise 'as' pour une conversion sûre qui retourne null en cas d'échec
+                var mauiWindow = window.Handler.PlatformView as MauiWinUIWindow;
+                return mauiWindow?.WindowHandle;
+            }
+        }
+        // Si une des conditions échoue, on retourne null
+        return null;
 #else
+        // Pour les autres plateformes, on ne retourne rien
         return null;
 #endif
     }
+
 }
